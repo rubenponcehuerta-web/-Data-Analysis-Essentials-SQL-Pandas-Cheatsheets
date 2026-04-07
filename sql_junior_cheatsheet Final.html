@@ -1,0 +1,2701 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Cheatsheet — Junior a Mid</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0e1117;
+  --surface:#131720;
+  --card:#181e2a;
+  --border:#1f2937;
+  --accent:#38bdf8;
+  --accent2:#fb923c;
+  --accent3:#4ade80;
+  --accent4:#f472b6;
+  --accent5:#a78bfa;
+  --accent6:#fbbf24;
+  --text:#e2e8f0;
+  --muted:#64748b;
+  --code:#0d1117;
+  --kw:#ff79c6;
+  --fn:#8be9fd;
+  --str:#50fa7b;
+  --cm:#6272a4;
+  --num:#bd93f9;
+  --tbl:#ffb86c;
+  --op:#ff5555;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(56,189,248,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.025) 1px,transparent 1px);
+  background-size:48px 48px;pointer-events:none;z-index:0;
+}
+
+/* ── HEADER ── */
+header{position:relative;z-index:1;padding:64px 40px 48px;text-align:center;border-bottom:1px solid var(--border);overflow:hidden;}
+header::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:240px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.hglow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(56,189,248,.07) 0%,transparent 70%);pointer-events:none;}
+.badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);border:1px solid rgba(56,189,248,.3);padding:4px 16px;border-radius:2px;margin-bottom:20px;background:rgba(56,189,248,.05);}
+h1{font-family:'Syne',sans-serif;font-size:clamp(44px,8vw,90px);font-weight:800;line-height:1;letter-spacing:-2px;background:linear-gradient(135deg,#fff 0%,var(--accent) 50%,var(--accent5) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;}
+.sub{color:var(--muted);font-size:15px;letter-spacing:.5px;}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;background:rgba(14,17,23,.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+nav::-webkit-scrollbar{display:none;}
+.nav-inner{display:flex;min-width:max-content;padding:0 32px;}
+nav a{display:flex;align-items:center;gap:6px;padding:13px 18px;color:var(--muted);text-decoration:none;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+nav a:hover{color:var(--text);border-bottom-color:var(--accent);}
+nav a .dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+/* ── MAIN ── */
+main{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:60px 40px;}
+section{margin-bottom:80px;}
+
+/* ── SECTION HEADER ── */
+.sh{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.snum{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);border:1px solid var(--border);padding:2px 8px;border-radius:2px;}
+.sicon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+h2{font-family:'Syne',sans-serif;font-size:21px;font-weight:800;letter-spacing:-.3px;}
+
+/* ── GRID ── */
+.g{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));}
+.g2{grid-template-columns:repeat(auto-fill,minmax(520px,1fr));}
+.g1{grid-template-columns:1fr;}
+
+/* ── CARD ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s,transform .2s;animation:fu .4s ease both;}
+.card:hover{border-color:rgba(56,189,248,.2);transform:translateY(-2px);}
+@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.ch{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);}
+.ct{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);}
+
+/* TAG COLORS */
+.tag{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 8px;border-radius:4px;border:1px solid;}
+.tg{color:var(--accent3);border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.07);}
+.tb{color:var(--accent);border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.07);}
+.to{color:var(--accent2);border-color:rgba(251,146,60,.3);background:rgba(251,146,60,.07);}
+.tp{color:var(--accent4);border-color:rgba(244,114,182,.3);background:rgba(244,114,182,.07);}
+.tv{color:var(--accent5);border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.07);}
+.ty{color:var(--accent6);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.07);}
+
+/* ── CODE ── */
+pre{margin:0;padding:18px;background:var(--code);overflow-x:auto;font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.75;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.kw{color:var(--kw);}
+.fn{color:var(--fn);}
+.str{color:var(--str);}
+.cm{color:var(--cm);font-style:italic;}
+.num{color:var(--num);}
+.tbl{color:var(--tbl);}
+.op{color:var(--op);}
+.v{color:#f8f8f2;}
+
+/* ── COPY BTN ── */
+.cp{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:4px;cursor:pointer;transition:all .15s;text-transform:uppercase;}
+.cp:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto;border-radius:8px;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+th{background:rgba(255,255,255,.03);padding:10px 16px;text-align:left;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:9px 16px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:top;}
+td:first-child{font-family:'IBM Plex Mono',monospace;color:var(--fn);white-space:nowrap;}
+td:last-child{color:var(--muted);font-size:11.5px;}
+tr:hover td{background:rgba(255,255,255,.015);}
+
+/* ── CALLOUT ── */
+.callout{display:flex;gap:14px;background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.18);border-radius:10px;padding:16px 20px;margin-bottom:22px;font-size:13px;line-height:1.6;color:rgba(226,232,240,.85);}
+.callout.warn{background:rgba(251,146,60,.05);border-color:rgba(251,146,60,.2);}
+.callout.tip{background:rgba(74,222,128,.05);border-color:rgba(74,222,128,.2);}
+.ci{font-size:20px;flex-shrink:0;}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:1;text-align:center;padding:40px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);}
+footer span{color:var(--accent);}
+
+@media(max-width:768px){
+  header{padding:40px 20px 30px;}
+  main{padding:40px 20px;}
+  .g,.g2{grid-template-columns:1fr;}
+  h1{font-size:38px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hglow"></div>
+  <div class="badge">SQL · Básico → Intermedio</div>
+  <h1>SQL</h1>
+  <p class="sub">Cheatsheet completo para Junior Developers — con ejemplos reales</p>
+</header>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#s01"><span class="dot" style="color:#38bdf8"></span>SELECT</a>
+    <a href="#s02"><span class="dot" style="color:#4ade80"></span>Filtros WHERE</a>
+    <a href="#s03"><span class="dot" style="color:#fb923c"></span>ORDER BY</a>
+    <a href="#s04"><span class="dot" style="color:#f472b6"></span>Funciones Agg.</a>
+    <a href="#s05"><span class="dot" style="color:#a78bfa"></span>GROUP BY / HAVING</a>
+    <a href="#s06"><span class="dot" style="color:#fbbf24"></span>JOINs</a>
+    <a href="#s07"><span class="dot" style="color:#38bdf8"></span>Subconsultas</a>
+    <a href="#s08"><span class="dot" style="color:#4ade80"></span>CTEs</a>
+    <a href="#s09"><span class="dot" style="color:#fb923c"></span>Window Functions</a>
+    <a href="#s10"><span class="dot" style="color:#f472b6"></span>Texto</a>
+    <a href="#s11"><span class="dot" style="color:#a78bfa"></span>Fechas</a>
+    <a href="#s12"><span class="dot" style="color:#fbbf24"></span>Condicionales</a>
+    <a href="#s13"><span class="dot" style="color:#38bdf8"></span>DDL / DML</a>
+    <a href="#s14"><span class="dot" style="color:#4ade80"></span>¿Qué usar?</a>
+    <a href="#s15"><span class="dot" style="color:#fb923c"></span>Subqueries+</a>
+    <a href="#s16"><span class="dot" style="color:#f472b6"></span>Window+</a>
+    <a href="#s17"><span class="dot" style="color:#a78bfa"></span>CTEs+</a>
+    <a href="#s18"><span class="dot" style="color:#fbbf24"></span>WHERE vs ON &amp; NULLs</a>
+    <a href="#s19"><span class="dot" style="color:#f87171"></span>Errores</a>
+    <a href="#s20"><span class="dot" style="color:#34d399"></span>Ejercicios Reales</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ══════════════════════════════════════
+     01 · SELECT BÁSICO
+══════════════════════════════════════ -->
+<section id="s01">
+  <div class="sh">
+    <div class="snum">01</div>
+    <div class="sicon" style="background:rgba(56,189,248,.1)">🔎</div>
+    <h2>SELECT — Consultas Básicas</h2>
+  </div>
+
+  <div class="callout">
+    <span class="ci">💡</span>
+    <div>El <strong>SELECT</strong> es la base de todo. Define <em>qué columnas</em> quieres ver. La cláusula <strong>FROM</strong> indica <em>de qué tabla</em>. Orden obligatorio: <code>SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT</code>.</div>
+  </div>
+
+  <div class="g">
+    <div class="card">
+      <div class="ch"><span class="ct">Selección básica</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tb">básico</span></div>
+      <pre><span class="cm">-- Todas las columnas</span>
+<span class="kw">SELECT</span> <span class="op">*</span>
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- Columnas específicas</span>
+<span class="kw">SELECT</span> nombre, apellido, salario
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- Con alias de columna</span>
+<span class="kw">SELECT</span>
+    nombre        <span class="kw">AS</span> Nombre,
+    salario       <span class="kw">AS</span> <span class="str">"Salario Mensual"</span>,
+    departamento  <span class="kw">AS</span> Depto
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- Alias de tabla</span>
+<span class="kw">SELECT</span> e.nombre, e.salario
+<span class="kw">FROM</span> <span class="tbl">empleados</span> <span class="kw">AS</span> e;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">DISTINCT y LIMIT</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tg">básico</span></div>
+      <pre><span class="cm">-- Valores únicos (sin repetidos)</span>
+<span class="kw">SELECT DISTINCT</span> departamento
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- Distinct en varias columnas</span>
+<span class="kw">SELECT DISTINCT</span> ciudad, pais
+<span class="kw">FROM</span> <span class="tbl">clientes</span>;
+
+<span class="cm">-- Limitar resultados</span>
+<span class="kw">SELECT</span> <span class="op">*</span>
+<span class="kw">FROM</span> <span class="tbl">productos</span>
+<span class="kw">LIMIT</span> <span class="num">10</span>;
+
+<span class="cm">-- LIMIT + OFFSET (paginación)</span>
+<span class="kw">SELECT</span> <span class="op">*</span>
+<span class="kw">FROM</span> <span class="tbl">productos</span>
+<span class="kw">LIMIT</span> <span class="num">10</span> <span class="kw">OFFSET</span> <span class="num">20</span>;  <span class="cm">-- página 3</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Operaciones en SELECT</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tb">básico</span></div>
+      <pre><span class="cm">-- Aritmética</span>
+<span class="kw">SELECT</span>
+    nombre,
+    salario,
+    salario <span class="op">*</span> <span class="num">1.1</span>          <span class="kw">AS</span> salario_con_aumento,
+    salario <span class="op">*</span> <span class="num">12</span>           <span class="kw">AS</span> salario_anual,
+    precio <span class="op">-</span> descuento     <span class="kw">AS</span> precio_final,
+    total <span class="op">/</span> cantidad       <span class="kw">AS</span> precio_unitario
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- Concatenar texto directo</span>
+<span class="kw">SELECT</span>
+    nombre <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> apellido <span class="kw">AS</span> nombre_completo
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+<span class="cm">-- En MySQL: CONCAT(nombre,' ',apellido)</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     02 · WHERE
+══════════════════════════════════════ -->
+<section id="s02">
+  <div class="sh">
+    <div class="snum">02</div>
+    <div class="sicon" style="background:rgba(74,222,128,.1)">⚗️</div>
+    <h2>Filtros — WHERE</h2>
+  </div>
+
+  <div class="g">
+    <div class="card">
+      <div class="ch"><span class="ct">Operadores de comparación</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tg">básico</span></div>
+      <pre><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> salario <span class="op">></span> <span class="num">30000</span>;      <span class="cm">-- mayor que</span>
+
+<span class="kw">WHERE</span> salario <span class="op">>=</span> <span class="num">30000</span>;     <span class="cm">-- mayor o igual</span>
+<span class="kw">WHERE</span> salario <span class="op"><</span> <span class="num">50000</span>;      <span class="cm">-- menor que</span>
+<span class="kw">WHERE</span> salario <span class="op"><=</span> <span class="num">50000</span>;     <span class="cm">-- menor o igual</span>
+<span class="kw">WHERE</span> salario <span class="op">=</span> <span class="num">40000</span>;      <span class="cm">-- igual</span>
+<span class="kw">WHERE</span> salario <span class="op"><></span> <span class="num">40000</span>;     <span class="cm">-- distinto (también !=)</span>
+<span class="kw">WHERE</span> nombre <span class="op">=</span> <span class="str">'Ana'</span>;       <span class="cm">-- texto (comillas simples)</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">AND · OR · NOT</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tg">básico</span></div>
+      <pre><span class="cm">-- AND: ambas condiciones</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> departamento <span class="op">=</span> <span class="str">'Ventas'</span>
+  <span class="kw">AND</span> salario <span class="op">></span> <span class="num">35000</span>;
+
+<span class="cm">-- OR: al menos una</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> ciudad <span class="op">=</span> <span class="str">'CDMX'</span>
+   <span class="kw">OR</span> ciudad <span class="op">=</span> <span class="str">'MTY'</span>;
+
+<span class="cm">-- NOT: negar condición</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE NOT</span> departamento <span class="op">=</span> <span class="str">'RRHH'</span>;
+
+<span class="cm">-- Combinar con paréntesis (muy importante)</span>
+<span class="kw">WHERE</span> (ciudad <span class="op">=</span> <span class="str">'CDMX'</span> <span class="kw">OR</span> ciudad <span class="op">=</span> <span class="str">'MTY'</span>)
+  <span class="kw">AND</span> salario <span class="op">></span> <span class="num">40000</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">BETWEEN · IN · LIKE</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tg">básico</span></div>
+      <pre><span class="cm">-- BETWEEN: rango (inclusivo en ambos extremos)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> salario <span class="kw">BETWEEN</span> <span class="num">30000</span> <span class="kw">AND</span> <span class="num">60000</span>;
+
+<span class="kw">WHERE</span> fecha_ingreso <span class="kw">BETWEEN</span> <span class="str">'2022-01-01'</span>
+                        <span class="kw">AND</span> <span class="str">'2023-12-31'</span>;
+
+<span class="cm">-- IN: lista de valores</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> departamento <span class="kw">IN</span> (<span class="str">'Ventas'</span>, <span class="str">'Finanzas'</span>, <span class="str">'TI'</span>);
+
+<span class="cm">-- NOT IN</span>
+<span class="kw">WHERE</span> ciudad <span class="kw">NOT IN</span> (<span class="str">'GDL'</span>, <span class="str">'MTY'</span>);
+
+<span class="cm">-- LIKE: patrón de texto</span>
+<span class="kw">WHERE</span> nombre <span class="kw">LIKE</span> <span class="str">'A%'</span>      <span class="cm">-- empieza con A</span>
+<span class="kw">WHERE</span> nombre <span class="kw">LIKE</span> <span class="str">'%ez'</span>     <span class="cm">-- termina en ez</span>
+<span class="kw">WHERE</span> email  <span class="kw">LIKE</span> <span class="str">'%@gmail%'</span><span class="cm">-- contiene @gmail</span>
+<span class="kw">WHERE</span> codigo <span class="kw">LIKE</span> <span class="str">'A_3'</span>     <span class="cm">-- _ = un carácter</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">IS NULL · IS NOT NULL</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">básico</span></div>
+      <pre><span class="cm">-- Buscar nulos (NUNCA usar = NULL)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">clientes</span>
+<span class="kw">WHERE</span> telefono <span class="kw">IS NULL</span>;
+
+<span class="cm">-- Sin nulos</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">clientes</span>
+<span class="kw">WHERE</span> email <span class="kw">IS NOT NULL</span>;
+
+<span class="cm">-- Combinar con otros filtros</span>
+<span class="kw">SELECT</span> nombre, email, telefono
+<span class="kw">FROM</span> <span class="tbl">clientes</span>
+<span class="kw">WHERE</span> email <span class="kw">IS NOT NULL</span>
+  <span class="kw">AND</span> activo <span class="op">=</span> <span class="num">1</span>;</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     03 · ORDER BY
+══════════════════════════════════════ -->
+<section id="s03">
+  <div class="sh">
+    <div class="snum">03</div>
+    <div class="sicon" style="background:rgba(251,146,60,.1)">↕️</div>
+    <h2>ORDER BY — Ordenar Resultados</h2>
+  </div>
+
+  <div class="g">
+    <div class="card">
+      <div class="ch"><span class="ct">Ordenamiento básico</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">básico</span></div>
+      <pre><span class="cm">-- Ascendente (default)</span>
+<span class="kw">SELECT</span> nombre, salario
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">ORDER BY</span> salario;
+
+<span class="cm">-- Descendente</span>
+<span class="kw">SELECT</span> nombre, salario
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>;
+
+<span class="cm">-- Múltiples columnas</span>
+<span class="kw">SELECT</span> departamento, nombre, salario
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">ORDER BY</span> departamento <span class="kw">ASC</span>, salario <span class="kw">DESC</span>;
+<span class="cm">-- → primero ordena por depto,
+--   dentro del mismo depto por salario desc</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">ORDER BY avanzado</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">intermedio</span></div>
+      <pre><span class="cm">-- Por posición de columna</span>
+<span class="kw">SELECT</span> nombre, apellido, salario
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">ORDER BY</span> <span class="num">3</span> <span class="kw">DESC</span>;  <span class="cm">-- 3ra columna = salario</span>
+
+<span class="cm">-- Por alias</span>
+<span class="kw">SELECT</span> nombre, salario <span class="op">*</span> <span class="num">12</span> <span class="kw">AS</span> anual
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">ORDER BY</span> anual <span class="kw">DESC</span>;
+
+<span class="cm">-- Nulos al final / al inicio</span>
+<span class="kw">ORDER BY</span> fecha <span class="kw">DESC NULLS LAST</span>;
+<span class="kw">ORDER BY</span> fecha <span class="kw">ASC  NULLS FIRST</span>;
+
+<span class="cm">-- Con LIMIT: top 5 mejor pagados</span>
+<span class="kw">SELECT</span> nombre, salario
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">5</span>;</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     04 · FUNCIONES AGREGADAS
+══════════════════════════════════════ -->
+<section id="s04">
+  <div class="sh">
+    <div class="snum">04</div>
+    <div class="sicon" style="background:rgba(244,114,182,.1)">📊</div>
+    <h2>Funciones de Agregación</h2>
+  </div>
+
+  <div class="callout tip">
+    <span class="ci">✅</span>
+    <div>Las funciones agregadas calculan un <strong>único valor</strong> a partir de múltiples filas. Siempre ignoran NULLs (excepto <code>COUNT(*)</code>). Se usan junto a <code>GROUP BY</code> cuando quieres resultados por grupos.</div>
+  </div>
+
+  <div class="g">
+    <div class="card">
+      <div class="ch"><span class="ct">COUNT</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tp">básico</span></div>
+      <pre><span class="cm">-- Contar total de filas</span>
+<span class="kw">SELECT COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> total
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- Contar filas no nulas en una columna</span>
+<span class="kw">SELECT COUNT</span>(email) <span class="kw">AS</span> con_email
+<span class="kw">FROM</span> <span class="tbl">clientes</span>;
+
+<span class="cm">-- Contar valores únicos</span>
+<span class="kw">SELECT COUNT</span>(<span class="kw">DISTINCT</span> departamento) <span class="kw">AS</span> num_deptos
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- COUNT con filtro</span>
+<span class="kw">SELECT COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> emp_ventas
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> departamento <span class="op">=</span> <span class="str">'Ventas'</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">SUM · AVG</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tp">básico</span></div>
+      <pre><span class="cm">-- Suma total</span>
+<span class="kw">SELECT SUM</span>(ventas) <span class="kw">AS</span> total_ventas
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>;
+
+<span class="cm">-- Suma condicional</span>
+<span class="kw">SELECT SUM</span>(monto) <span class="kw">AS</span> ventas_2024
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>
+<span class="kw">WHERE</span> YEAR(fecha) <span class="op">=</span> <span class="num">2024</span>;
+
+<span class="cm">-- Promedio</span>
+<span class="kw">SELECT AVG</span>(salario) <span class="kw">AS</span> salario_promedio
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- Promedio con redondeo</span>
+<span class="kw">SELECT ROUND</span>(<span class="kw">AVG</span>(salario), <span class="num">2</span>) <span class="kw">AS</span> promedio
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- SUM y AVG juntos</span>
+<span class="kw">SELECT</span>
+    <span class="kw">SUM</span>(monto)          <span class="kw">AS</span> total,
+    <span class="kw">AVG</span>(monto)          <span class="kw">AS</span> promedio,
+    <span class="kw">COUNT</span>(<span class="op">*</span>)           <span class="kw">AS</span> num_ordenes
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">MIN · MAX</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tp">básico</span></div>
+      <pre><span class="cm">-- Mínimo y máximo numérico</span>
+<span class="kw">SELECT</span>
+    <span class="kw">MIN</span>(salario) <span class="kw">AS</span> salario_min,
+    <span class="kw">MAX</span>(salario) <span class="kw">AS</span> salario_max
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- También funciona con fechas</span>
+<span class="kw">SELECT</span>
+    <span class="kw">MIN</span>(fecha_pedido) <span class="kw">AS</span> primer_pedido,
+    <span class="kw">MAX</span>(fecha_pedido) <span class="kw">AS</span> ultimo_pedido
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>;
+
+<span class="cm">-- Y con texto (orden alfabético)</span>
+<span class="kw">SELECT</span>
+    <span class="kw">MIN</span>(nombre) <span class="kw">AS</span> primero_alfa,
+    <span class="kw">MAX</span>(nombre) <span class="kw">AS</span> ultimo_alfa
+<span class="kw">FROM</span> <span class="tbl">clientes</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Tabla resumen de funciones</span><span class="tag tg">ref</span></div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Función</th><th>Qué hace</th><th>Ignora NULL</th></tr></thead>
+          <tbody>
+            <tr><td>COUNT(*)</td><td>Cuenta todas las filas</td><td>No</td></tr>
+            <tr><td>COUNT(col)</td><td>Cuenta filas no nulas en col</td><td>Sí</td></tr>
+            <tr><td>SUM(col)</td><td>Suma valores numéricos</td><td>Sí</td></tr>
+            <tr><td>AVG(col)</td><td>Promedio numérico</td><td>Sí</td></tr>
+            <tr><td>MIN(col)</td><td>Valor mínimo</td><td>Sí</td></tr>
+            <tr><td>MAX(col)</td><td>Valor máximo</td><td>Sí</td></tr>
+            <tr><td>ROUND(n,d)</td><td>Redondea a d decimales</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     05 · GROUP BY / HAVING
+══════════════════════════════════════ -->
+<section id="s05">
+  <div class="sh">
+    <div class="snum">05</div>
+    <div class="sicon" style="background:rgba(167,139,250,.1)">🗂️</div>
+    <h2>GROUP BY &amp; HAVING</h2>
+  </div>
+
+  <div class="callout warn">
+    <span class="ci">⚠️</span>
+    <div><strong>Regla de oro:</strong> Todo lo que esté en el <code>SELECT</code> y no sea una función agregada, <strong>debe estar en el GROUP BY</strong>. <code>HAVING</code> filtra grupos (como WHERE pero después de agrupar).</div>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">GROUP BY básico</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tv">intermedio</span></div>
+      <pre><span class="cm">-- Total de ventas por departamento</span>
+<span class="kw">SELECT</span>
+    departamento,
+    <span class="kw">COUNT</span>(<span class="op">*</span>)       <span class="kw">AS</span> num_empleados,
+    <span class="kw">SUM</span>(salario)    <span class="kw">AS</span> gasto_total,
+    <span class="kw">AVG</span>(salario)    <span class="kw">AS</span> salario_prom,
+    <span class="kw">MIN</span>(salario)    <span class="kw">AS</span> salario_min,
+    <span class="kw">MAX</span>(salario)    <span class="kw">AS</span> salario_max
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">GROUP BY</span> departamento
+<span class="kw">ORDER BY</span> gasto_total <span class="kw">DESC</span>;
+
+<span class="cm">-- Agrupar por múltiples columnas</span>
+<span class="kw">SELECT</span>
+    departamento,
+    ciudad,
+    <span class="kw">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> empleados
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">GROUP BY</span> departamento, ciudad
+<span class="kw">ORDER BY</span> departamento, empleados <span class="kw">DESC</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">HAVING — filtrar grupos</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tv">intermedio</span></div>
+      <pre><span class="cm">-- Departamentos con más de 5 empleados</span>
+<span class="kw">SELECT</span>
+    departamento,
+    <span class="kw">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> num_empleados
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">GROUP BY</span> departamento
+<span class="kw">HAVING COUNT</span>(<span class="op">*</span>) <span class="op">></span> <span class="num">5</span>;
+
+<span class="cm">-- WHERE + GROUP BY + HAVING juntos</span>
+<span class="kw">SELECT</span>
+    departamento,
+    <span class="kw">AVG</span>(salario) <span class="kw">AS</span> prom
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> activo <span class="op">=</span> <span class="num">1</span>             <span class="cm">-- 1° filtra filas</span>
+<span class="kw">GROUP BY</span> departamento         <span class="cm">-- 2° agrupa</span>
+<span class="kw">HAVING AVG</span>(salario) <span class="op">></span> <span class="num">40000</span>  <span class="cm">-- 3° filtra grupos</span>
+<span class="kw">ORDER BY</span> prom <span class="kw">DESC</span>;           <span class="cm">-- 4° ordena</span>
+
+<span class="cm">-- HAVING con alias (algunos dialectos)</span>
+<span class="kw">HAVING</span> prom <span class="op">></span> <span class="num">40000</span>  <span class="cm">-- PostgreSQL / MySQL 8+</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     06 · JOINs
+══════════════════════════════════════ -->
+<section id="s06">
+  <div class="sh">
+    <div class="snum">06</div>
+    <div class="sicon" style="background:rgba(251,191,36,.1)">🔗</div>
+    <h2>JOINs — Unir Tablas</h2>
+  </div>
+
+  <div class="callout">
+    <span class="ci">🔗</span>
+    <div>Los JOINs combinan filas de <strong>dos o más tablas</strong> basándose en una columna relacionada (generalmente una clave foránea). Siempre usa alias de tabla para que las queries sean legibles.</div>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">INNER JOIN — solo coincidencias</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag ty">intermedio</span></div>
+      <pre><span class="cm">-- Solo filas que tienen match en AMBAS tablas</span>
+<span class="kw">SELECT</span>
+    e.nombre,
+    e.salario,
+    d.nombre_depto
+<span class="kw">FROM</span> <span class="tbl">empleados</span>      <span class="kw">AS</span> e
+<span class="kw">INNER JOIN</span> <span class="tbl">departamentos</span> <span class="kw">AS</span> d
+    <span class="kw">ON</span> e.depto_id <span class="op">=</span> d.id;
+
+<span class="cm">-- Con filtro adicional</span>
+<span class="kw">SELECT</span>
+    e.nombre,
+    d.nombre_depto
+<span class="kw">FROM</span> <span class="tbl">empleados</span>      <span class="kw">AS</span> e
+<span class="kw">INNER JOIN</span> <span class="tbl">departamentos</span> <span class="kw">AS</span> d
+    <span class="kw">ON</span> e.depto_id <span class="op">=</span> d.id
+<span class="kw">WHERE</span> e.salario <span class="op">></span> <span class="num">40000</span>
+<span class="kw">ORDER BY</span> e.nombre;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">LEFT JOIN — todos del izquierdo</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag ty">intermedio</span></div>
+      <pre><span class="cm">-- TODAS las filas del lado izquierdo
+-- + coincidencias del derecho (NULL si no hay)</span>
+<span class="kw">SELECT</span>
+    c.nombre          <span class="kw">AS</span> cliente,
+    o.id              <span class="kw">AS</span> orden_id,
+    o.monto
+<span class="kw">FROM</span> <span class="tbl">clientes</span> <span class="kw">AS</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">ordenes</span> <span class="kw">AS</span> o
+    <span class="kw">ON</span> c.id <span class="op">=</span> o.cliente_id;
+<span class="cm">-- Clientes SIN ordenes aparecen con NULL</span>
+
+<span class="cm">-- Truco: encontrar clientes sin órdenes</span>
+<span class="kw">SELECT</span> c.nombre
+<span class="kw">FROM</span> <span class="tbl">clientes</span> <span class="kw">AS</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">ordenes</span> <span class="kw">AS</span> o
+    <span class="kw">ON</span> c.id <span class="op">=</span> o.cliente_id
+<span class="kw">WHERE</span> o.id <span class="kw">IS NULL</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">RIGHT JOIN · FULL OUTER JOIN</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag ty">intermedio</span></div>
+      <pre><span class="cm">-- RIGHT JOIN: todos del lado derecho</span>
+<span class="kw">SELECT</span>
+    e.nombre,
+    d.nombre_depto
+<span class="kw">FROM</span> <span class="tbl">empleados</span>         <span class="kw">AS</span> e
+<span class="kw">RIGHT JOIN</span> <span class="tbl">departamentos</span> <span class="kw">AS</span> d
+    <span class="kw">ON</span> e.depto_id <span class="op">=</span> d.id;
+<span class="cm">-- Deptos sin empleados aparecen con NULL</span>
+
+<span class="cm">-- FULL OUTER JOIN: todos de ambos lados
+-- (no disponible en MySQL, usar UNION)</span>
+<span class="kw">SELECT</span> e.nombre, d.nombre_depto
+<span class="kw">FROM</span> <span class="tbl">empleados</span> <span class="kw">AS</span> e
+<span class="kw">FULL OUTER JOIN</span> <span class="tbl">departamentos</span> <span class="kw">AS</span> d
+    <span class="kw">ON</span> e.depto_id <span class="op">=</span> d.id;
+<span class="cm">-- Incluye: matches + sin match de ambos lados</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">JOIN doble — 3 tablas</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag ty">intermedio</span></div>
+      <pre><span class="cm">-- Empleados con su depto Y su manager</span>
+<span class="kw">SELECT</span>
+    e.nombre          <span class="kw">AS</span> empleado,
+    d.nombre_depto    <span class="kw">AS</span> departamento,
+    m.nombre          <span class="kw">AS</span> manager
+<span class="kw">FROM</span>      <span class="tbl">empleados</span>     <span class="kw">AS</span> e
+<span class="kw">INNER JOIN</span> <span class="tbl">departamentos</span> <span class="kw">AS</span> d
+    <span class="kw">ON</span> e.depto_id <span class="op">=</span> d.id
+<span class="kw">LEFT JOIN</span>  <span class="tbl">empleados</span>     <span class="kw">AS</span> m
+    <span class="kw">ON</span> e.manager_id <span class="op">=</span> m.id
+<span class="kw">ORDER BY</span> d.nombre_depto, e.nombre;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">JOIN triple — 4 tablas</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag ty">intermedio</span></div>
+      <pre><span class="cm">-- Órdenes con cliente, producto y vendedor</span>
+<span class="kw">SELECT</span>
+    o.id              <span class="kw">AS</span> orden,
+    c.nombre          <span class="kw">AS</span> cliente,
+    p.nombre          <span class="kw">AS</span> producto,
+    v.nombre          <span class="kw">AS</span> vendedor,
+    o.monto
+<span class="kw">FROM</span>       <span class="tbl">ordenes</span>   <span class="kw">AS</span> o
+<span class="kw">INNER JOIN</span> <span class="tbl">clientes</span>  <span class="kw">AS</span> c
+    <span class="kw">ON</span> o.cliente_id <span class="op">=</span> c.id
+<span class="kw">INNER JOIN</span> <span class="tbl">productos</span> <span class="kw">AS</span> p
+    <span class="kw">ON</span> o.producto_id <span class="op">=</span> p.id
+<span class="kw">INNER JOIN</span> <span class="tbl">empleados</span> <span class="kw">AS</span> v
+    <span class="kw">ON</span> o.vendedor_id <span class="op">=</span> v.id
+<span class="kw">WHERE</span> o.fecha <span class="op">>=</span> <span class="str">'2024-01-01'</span>
+<span class="kw">ORDER BY</span> o.monto <span class="kw">DESC</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">JOIN cuádruple — 5 tablas</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag ty">intermedio</span></div>
+      <pre><span class="cm">-- Reporte completo de envíos</span>
+<span class="kw">SELECT</span>
+    o.id             <span class="kw">AS</span> orden,
+    c.nombre         <span class="kw">AS</span> cliente,
+    p.nombre         <span class="kw">AS</span> producto,
+    cat.nombre       <span class="kw">AS</span> categoria,
+    env.estado       <span class="kw">AS</span> envio,
+    o.fecha,
+    o.monto
+<span class="kw">FROM</span>       <span class="tbl">ordenes</span>    <span class="kw">AS</span> o
+<span class="kw">INNER JOIN</span> <span class="tbl">clientes</span>   <span class="kw">AS</span> c
+    <span class="kw">ON</span> o.cliente_id <span class="op">=</span> c.id
+<span class="kw">INNER JOIN</span> <span class="tbl">productos</span>  <span class="kw">AS</span> p
+    <span class="kw">ON</span> o.producto_id <span class="op">=</span> p.id
+<span class="kw">INNER JOIN</span> <span class="tbl">categorias</span> <span class="kw">AS</span> cat
+    <span class="kw">ON</span> p.categoria_id <span class="op">=</span> cat.id
+<span class="kw">LEFT JOIN</span>  <span class="tbl">envios</span>     <span class="kw">AS</span> env
+    <span class="kw">ON</span> o.id <span class="op">=</span> env.orden_id
+<span class="kw">WHERE</span> YEAR(o.fecha) <span class="op">=</span> <span class="num">2024</span>
+<span class="kw">ORDER BY</span> o.fecha <span class="kw">DESC</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">JOIN + GROUP BY combinados</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag ty">intermedio</span></div>
+      <pre><span class="cm">-- Ventas totales por cliente</span>
+<span class="kw">SELECT</span>
+    c.nombre,
+    <span class="kw">COUNT</span>(o.id)     <span class="kw">AS</span> num_ordenes,
+    <span class="kw">SUM</span>(o.monto)    <span class="kw">AS</span> total_gastado,
+    <span class="kw">AVG</span>(o.monto)    <span class="kw">AS</span> ticket_promedio,
+    <span class="kw">MAX</span>(o.fecha)    <span class="kw">AS</span> ultima_compra
+<span class="kw">FROM</span> <span class="tbl">clientes</span>  <span class="kw">AS</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">ordenes</span> <span class="kw">AS</span> o
+    <span class="kw">ON</span> c.id <span class="op">=</span> o.cliente_id
+<span class="kw">GROUP BY</span> c.id, c.nombre
+<span class="kw">HAVING</span> <span class="kw">SUM</span>(o.monto) <span class="op">></span> <span class="num">1000</span>
+<span class="kw">ORDER BY</span> total_gastado <span class="kw">DESC</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">UNION &amp; UNION ALL</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">intermedio</span></div>
+      <pre><span class="cm">-- UNION: combina resultados, elimina duplicados</span>
+<span class="kw">SELECT</span> nombre, email <span class="kw">FROM</span> <span class="tbl">clientes</span>
+<span class="kw">UNION</span>
+<span class="kw">SELECT</span> nombre, email <span class="kw">FROM</span> <span class="tbl">proveedores</span>;
+
+<span class="cm">-- UNION ALL: incluye duplicados (más rápido)</span>
+<span class="kw">SELECT</span> nombre, <span class="str">'cliente'</span> <span class="kw">AS</span> tipo <span class="kw">FROM</span> <span class="tbl">clientes</span>
+<span class="kw">UNION ALL</span>
+<span class="kw">SELECT</span> nombre, <span class="str">'proveedor'</span>        <span class="kw">FROM</span> <span class="tbl">proveedores</span>;
+
+<span class="cm">-- Las columnas deben coincidir en número y tipo
+-- El nombre de columna lo da la 1ra query</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     07 · SUBCONSULTAS
+══════════════════════════════════════ -->
+<section id="s07">
+  <div class="sh">
+    <div class="snum">07</div>
+    <div class="sicon" style="background:rgba(56,189,248,.1)">🪆</div>
+    <h2>Subconsultas (Subqueries)</h2>
+  </div>
+
+  <div class="callout">
+    <span class="ci">🪆</span>
+    <div>Una subconsulta es un <strong>SELECT dentro de otro SELECT</strong>. Va entre paréntesis. Se puede usar en el <code>WHERE</code>, en el <code>FROM</code> (tabla derivada) o en el <code>SELECT</code> (subconsulta escalar).</div>
+  </div>
+
+  <!-- CUÁNDO USAR SUBQUERIES -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;">
+    <div class="ch" style="border-bottom:1px solid var(--border);">
+      <span class="ct">¿Cuándo usar Subqueries?</span>
+      <span class="tag tb">guía de uso</span>
+    </div>
+    <div style="padding:0;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0;border-bottom:1px solid var(--border);">
+        <div style="padding:16px 20px;border-right:1px solid var(--border);">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent3);margin-bottom:8px;">✅ Úsalas cuando...</div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:rgba(226,232,240,.8);line-height:1.5;">
+            <li>→ Necesitas <strong>filtrar con el resultado de otra query</strong> (ej: salario mayor al promedio)</li>
+            <li>→ Quieres saber <strong>si existe o no existe</strong> algo en otra tabla (EXISTS)</li>
+            <li>→ Usas <strong>IN / NOT IN</strong> con una lista dinámica generada por otra query</li>
+            <li>→ La lógica solo se usa <strong>una vez</strong> y es sencilla de entender inline</li>
+            <li>→ Necesitas un <strong>valor escalar</strong> único dentro del SELECT (ej: mostrar el máximo global junto a cada fila)</li>
+          </ul>
+        </div>
+        <div style="padding:16px 20px;border-right:1px solid var(--border);">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--op);margin-bottom:8px;">❌ Evítalas cuando...</div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:rgba(226,232,240,.8);line-height:1.5;">
+            <li>→ La lógica se repite en varios lugares → usa <strong>CTE</strong></li>
+            <li>→ La subconsulta está en el SELECT y se ejecuta <strong>una vez por fila</strong> → muy lento, usar Window Function</li>
+            <li>→ Tienes <strong>3+ subqueries anidadas</strong> → el código se vuelve ilegible, prefiere CTEs</li>
+            <li>→ Necesitas comparar filas entre sí (ej: vs. fila anterior) → usa <strong>Window Function</strong></li>
+          </ul>
+        </div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent6);margin-bottom:8px;">📌 Casos de uso reales</div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:rgba(226,232,240,.8);line-height:1.5;">
+            <li>→ Clientes que <em>nunca</em> compraron (<code>NOT IN</code> / <code>NOT EXISTS</code>)</li>
+            <li>→ Productos con precio mayor al promedio de su categoría</li>
+            <li>→ Empleados del departamento con más ventas</li>
+            <li>→ Filtrar por una métrica calculada (<code>WHERE monto &gt; (SELECT AVG...)</code>)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">Subconsulta en WHERE</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tb">intermedio</span></div>
+      <pre><span class="cm">-- Empleados con salario mayor al promedio</span>
+<span class="kw">SELECT</span> nombre, salario
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> salario <span class="op">></span> (
+    <span class="kw">SELECT AVG</span>(salario)
+    <span class="kw">FROM</span> <span class="tbl">empleados</span>
+);
+
+<span class="cm">-- Con IN: clientes que compraron en 2024</span>
+<span class="kw">SELECT</span> nombre
+<span class="kw">FROM</span> <span class="tbl">clientes</span>
+<span class="kw">WHERE</span> id <span class="kw">IN</span> (
+    <span class="kw">SELECT DISTINCT</span> cliente_id
+    <span class="kw">FROM</span> <span class="tbl">ordenes</span>
+    <span class="kw">WHERE</span> YEAR(fecha) <span class="op">=</span> <span class="num">2024</span>
+);
+
+<span class="cm">-- Con NOT IN: clientes que NUNCA compraron</span>
+<span class="kw">SELECT</span> nombre
+<span class="kw">FROM</span> <span class="tbl">clientes</span>
+<span class="kw">WHERE</span> id <span class="kw">NOT IN</span> (
+    <span class="kw">SELECT DISTINCT</span> cliente_id
+    <span class="kw">FROM</span> <span class="tbl">ordenes</span>
+    <span class="kw">WHERE</span> cliente_id <span class="kw">IS NOT NULL</span>
+);</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Subconsulta en FROM (tabla derivada)</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tb">intermedio</span></div>
+      <pre><span class="cm">-- Promedio de ventas por depto, luego filtrar</span>
+<span class="kw">SELECT</span> depto, promedio
+<span class="kw">FROM</span> (
+    <span class="kw">SELECT</span>
+        departamento    <span class="kw">AS</span> depto,
+        <span class="kw">AVG</span>(salario)  <span class="kw">AS</span> promedio
+    <span class="kw">FROM</span> <span class="tbl">empleados</span>
+    <span class="kw">GROUP BY</span> departamento
+) <span class="kw">AS</span> resumen            <span class="cm">-- alias obligatorio</span>
+<span class="kw">WHERE</span> promedio <span class="op">></span> <span class="num">45000</span>
+<span class="kw">ORDER BY</span> promedio <span class="kw">DESC</span>;
+
+<span class="cm">-- Top producto por categoría</span>
+<span class="kw">SELECT</span> cat, nombre_prod, max_precio
+<span class="kw">FROM</span> (
+    <span class="kw">SELECT</span>
+        categoria <span class="kw">AS</span> cat,
+        nombre    <span class="kw">AS</span> nombre_prod,
+        <span class="kw">MAX</span>(precio) <span class="kw">AS</span> max_precio
+    <span class="kw">FROM</span> <span class="tbl">productos</span>
+    <span class="kw">GROUP BY</span> categoria, nombre
+) <span class="kw">AS</span> sub
+<span class="kw">ORDER BY</span> cat, max_precio <span class="kw">DESC</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Subconsulta escalar en SELECT</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tb">intermedio</span></div>
+      <pre><span class="cm">-- Mostrar salario vs. promedio global</span>
+<span class="kw">SELECT</span>
+    nombre,
+    salario,
+    (<span class="kw">SELECT AVG</span>(salario) <span class="kw">FROM</span> <span class="tbl">empleados</span>) <span class="kw">AS</span> prom_global,
+    salario <span class="op">-</span> (<span class="kw">SELECT AVG</span>(salario) <span class="kw">FROM</span> <span class="tbl">empleados</span>) <span class="kw">AS</span> diferencia
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">ORDER BY</span> diferencia <span class="kw">DESC</span>;
+<span class="cm">-- ⚠ Cuidado: se ejecuta una vez por fila → lento
+--   Mejor usar CTE o Window Function</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">EXISTS / NOT EXISTS</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tb">intermedio</span></div>
+      <pre><span class="cm">-- EXISTS: ¿existe al menos una fila?</span>
+<span class="kw">SELECT</span> c.nombre
+<span class="kw">FROM</span> <span class="tbl">clientes</span> <span class="kw">AS</span> c
+<span class="kw">WHERE EXISTS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span>
+    <span class="kw">FROM</span> <span class="tbl">ordenes</span> <span class="kw">AS</span> o
+    <span class="kw">WHERE</span> o.cliente_id <span class="op">=</span> c.id
+      <span class="kw">AND</span> o.monto <span class="op">></span> <span class="num">5000</span>
+);
+
+<span class="cm">-- NOT EXISTS: clientes sin ninguna orden</span>
+<span class="kw">SELECT</span> c.nombre
+<span class="kw">FROM</span> <span class="tbl">clientes</span> <span class="kw">AS</span> c
+<span class="kw">WHERE NOT EXISTS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span>
+    <span class="kw">FROM</span> <span class="tbl">ordenes</span> <span class="kw">AS</span> o
+    <span class="kw">WHERE</span> o.cliente_id <span class="op">=</span> c.id
+);
+<span class="cm">-- EXISTS es más eficiente que NOT IN
+-- cuando hay NULLs en la subconsulta</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     08 · CTEs
+══════════════════════════════════════ -->
+<section id="s08">
+  <div class="sh">
+    <div class="snum">08</div>
+    <div class="sicon" style="background:rgba(74,222,128,.1)">📋</div>
+    <h2>CTEs — Common Table Expressions</h2>
+  </div>
+
+  <div class="callout tip">
+    <span class="ci">✅</span>
+    <div>Un CTE es como una <strong>tabla temporal con nombre</strong> que existe solo para esa query. Hace el código más legible que las subconsultas anidadas. Se define con <code>WITH nombre AS (...)</code> antes del SELECT principal.</div>
+  </div>
+
+  <!-- CUÁNDO USAR CTEs -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;">
+    <div class="ch" style="border-bottom:1px solid var(--border);">
+      <span class="ct">¿Cuándo usar CTEs?</span>
+      <span class="tag tg">guía de uso</span>
+    </div>
+    <div style="padding:0;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0;border-bottom:1px solid var(--border);">
+        <div style="padding:16px 20px;border-right:1px solid var(--border);">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent3);margin-bottom:8px;">✅ Úsalos cuando...</div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:rgba(226,232,240,.8);line-height:1.5;">
+            <li>→ Necesitas <strong>reutilizar la misma lógica</strong> varias veces en la misma query</li>
+            <li>→ Tienes <strong>subqueries anidadas</strong> que hacen el código ilegible</li>
+            <li>→ Quieres <strong>dividir un problema complejo</strong> en pasos lógicos con nombre</li>
+            <li>→ Necesitas hacer un <strong>JOIN sobre un resultado agregado</strong> (ej: JOIN contra un GROUP BY)</li>
+            <li>→ Quieres que tu query se lea como una <strong>historia paso a paso</strong></li>
+          </ul>
+        </div>
+        <div style="padding:16px 20px;border-right:1px solid var(--border);">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--op);margin-bottom:8px;">❌ Evítalos cuando...</div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:rgba(226,232,240,.8);line-height:1.5;">
+            <li>→ La lógica es tan simple que una <strong>subquery inline</strong> es más clara</li>
+            <li>→ Necesitas comparar filas entre sí o calcular rankings → usa <strong>Window Function</strong></li>
+            <li>→ El CTE se usaría <strong>solo una vez</strong> y es de una sola línea (sobrecomplica sin beneficio)</li>
+          </ul>
+        </div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent6);margin-bottom:8px;">📌 Casos de uso reales</div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:rgba(226,232,240,.8);line-height:1.5;">
+            <li>→ Comparar ventas de <em>este año vs. año anterior</em> (dos CTEs separados)</li>
+            <li>→ Calcular el promedio por depto y luego JOIN para comparar cada empleado</li>
+            <li>→ Construir un reporte en pasos: clientes → sus órdenes → totales → ranking</li>
+            <li>→ Reemplazar una subquery en el FROM que se repite 3+ veces</li>
+          </ul>
+        </div>
+      </div>
+      <div style="padding:12px 20px;background:rgba(74,222,128,.04);border-top:1px solid var(--border);font-size:12px;color:var(--muted);">
+        💡 <strong style="color:var(--accent3)">CTE vs Subquery:</strong> funcionalmente son equivalentes en la mayoría de casos. La diferencia es <strong>legibilidad</strong>. Si tienes que explicarlo a alguien más → usa CTE. Si es algo rápido de una línea → subquery está bien.
+      </div>
+    </div>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">CTE básico</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tg">intermedio</span></div>
+      <pre><span class="cm">-- Misma lógica que subquery, más legible</span>
+<span class="kw">WITH</span> empleados_activos <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> id, nombre, salario, depto_id
+    <span class="kw">FROM</span> <span class="tbl">empleados</span>
+    <span class="kw">WHERE</span> activo <span class="op">=</span> <span class="num">1</span>
+)
+<span class="kw">SELECT</span>
+    nombre,
+    salario
+<span class="kw">FROM</span> empleados_activos
+<span class="kw">WHERE</span> salario <span class="op">></span> <span class="num">40000</span>
+<span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>;
+
+<span class="cm">-- También puedes hacer JOIN contra el CTE</span>
+<span class="kw">WITH</span> activos <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">empleados</span> <span class="kw">WHERE</span> activo <span class="op">=</span> <span class="num">1</span>
+)
+<span class="kw">SELECT</span> a.nombre, d.nombre_depto
+<span class="kw">FROM</span> activos <span class="kw">AS</span> a
+<span class="kw">INNER JOIN</span> <span class="tbl">departamentos</span> <span class="kw">AS</span> d
+    <span class="kw">ON</span> a.depto_id <span class="op">=</span> d.id;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Múltiples CTEs</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tg">intermedio</span></div>
+      <pre><span class="cm">-- Varios CTEs separados por coma</span>
+<span class="kw">WITH</span>
+ventas_2024 <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> cliente_id, <span class="kw">SUM</span>(monto) <span class="kw">AS</span> total
+    <span class="kw">FROM</span> <span class="tbl">ordenes</span>
+    <span class="kw">WHERE</span> YEAR(fecha) <span class="op">=</span> <span class="num">2024</span>
+    <span class="kw">GROUP BY</span> cliente_id
+),
+ventas_2023 <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> cliente_id, <span class="kw">SUM</span>(monto) <span class="kw">AS</span> total
+    <span class="kw">FROM</span> <span class="tbl">ordenes</span>
+    <span class="kw">WHERE</span> YEAR(fecha) <span class="op">=</span> <span class="num">2023</span>
+    <span class="kw">GROUP BY</span> cliente_id
+)
+<span class="kw">SELECT</span>
+    c.nombre,
+    v24.total  <span class="kw">AS</span> ventas_24,
+    v23.total  <span class="kw">AS</span> ventas_23,
+    v24.total <span class="op">-</span> v23.total <span class="kw">AS</span> diferencia
+<span class="kw">FROM</span> <span class="tbl">clientes</span>   <span class="kw">AS</span> c
+<span class="kw">LEFT JOIN</span> ventas_2024 <span class="kw">AS</span> v24 <span class="kw">ON</span> c.id <span class="op">=</span> v24.cliente_id
+<span class="kw">LEFT JOIN</span> ventas_2023 <span class="kw">AS</span> v23 <span class="kw">ON</span> c.id <span class="op">=</span> v23.cliente_id
+<span class="kw">ORDER BY</span> diferencia <span class="kw">DESC</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">CTE para reutilizar lógica compleja</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tg">intermedio</span></div>
+      <pre><span class="cm">-- Reporte: empleados sobre el prom de su depto</span>
+<span class="kw">WITH</span> prom_por_depto <span class="kw">AS</span> (
+    <span class="kw">SELECT</span>
+        depto_id,
+        <span class="kw">AVG</span>(salario) <span class="kw">AS</span> prom_depto
+    <span class="kw">FROM</span> <span class="tbl">empleados</span>
+    <span class="kw">GROUP BY</span> depto_id
+)
+<span class="kw">SELECT</span>
+    e.nombre,
+    e.salario,
+    p.prom_depto,
+    e.salario <span class="op">-</span> p.prom_depto <span class="kw">AS</span> diferencia
+<span class="kw">FROM</span> <span class="tbl">empleados</span>        <span class="kw">AS</span> e
+<span class="kw">INNER JOIN</span> prom_por_depto <span class="kw">AS</span> p
+    <span class="kw">ON</span> e.depto_id <span class="op">=</span> p.depto_id
+<span class="kw">WHERE</span> e.salario <span class="op">></span> p.prom_depto
+<span class="kw">ORDER BY</span> diferencia <span class="kw">DESC</span>;</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     09 · WINDOW FUNCTIONS
+══════════════════════════════════════ -->
+<section id="s09">
+  <div class="sh">
+    <div class="snum">09</div>
+    <div class="sicon" style="background:rgba(251,146,60,.1)">🪟</div>
+    <h2>Window Functions — Funciones de Ventana</h2>
+  </div>
+
+  <div class="callout warn">
+    <span class="ci">⚠️</span>
+    <div>A diferencia de <code>GROUP BY</code>, las window functions <strong>no colapsan filas</strong>. Calculan un valor para cada fila basándose en un grupo relacionado. Usan la cláusula <code>OVER()</code>. Son lo más poderoso del SQL intermedio.</div>
+  </div>
+
+  <!-- CUÁNDO USAR WINDOW FUNCTIONS -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px;">
+    <div class="ch" style="border-bottom:1px solid var(--border);">
+      <span class="ct">¿Cuándo usar Window Functions?</span>
+      <span class="tag to">guía de uso</span>
+    </div>
+    <div style="padding:0;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0;border-bottom:1px solid var(--border);">
+        <div style="padding:16px 20px;border-right:1px solid var(--border);">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent3);margin-bottom:8px;">✅ Úsalas cuando...</div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:rgba(226,232,240,.8);line-height:1.5;">
+            <li>→ Quieres <strong>rankear filas</strong> (top 3 por grupo, el mejor vendedor por región)</li>
+            <li>→ Necesitas <strong>comparar una fila con la anterior o siguiente</strong> (LAG / LEAD)</li>
+            <li>→ Quieres un <strong>acumulado progresivo</strong> (suma corrida, conteo acumulado)</li>
+            <li>→ Necesitas agregar <strong>sin perder el detalle</strong> de las filas (ej: mostrar salario + promedio del depto en la misma fila)</li>
+            <li>→ Quieres calcular <strong>% del total</strong> manteniendo el detalle por fila</li>
+            <li>→ Necesitas el <strong>primer o último valor</strong> dentro de un grupo sin GROUP BY</li>
+          </ul>
+        </div>
+        <div style="padding:16px 20px;border-right:1px solid var(--border);">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--op);margin-bottom:8px;">❌ Evítalas cuando...</div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:rgba(226,232,240,.8);line-height:1.5;">
+            <li>→ Solo necesitas un resumen/total → <strong>GROUP BY + agregación</strong> es más simple</li>
+            <li>→ Solo quieres filtrar basándote en otra tabla → usa <strong>subquery o JOIN</strong></li>
+            <li>→ Tu motor de BD no las soporta (MySQL &lt; 8.0, SQLite antiguo)</li>
+          </ul>
+        </div>
+        <div style="padding:16px 20px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent6);margin-bottom:8px;">📌 Casos de uso reales</div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:rgba(226,232,240,.8);line-height:1.5;">
+            <li>→ <strong>Top 1 empleado</strong> por departamento (ROW_NUMBER + CTE)</li>
+            <li>→ <strong>Crecimiento % mes a mes</strong> en ventas (LAG)</li>
+            <li>→ <strong>Suma acumulada</strong> de ingresos por fecha</li>
+            <li>→ Mostrar cada venta con el <strong>total del vendedor</strong> en la misma fila</li>
+            <li>→ Dividir clientes en <strong>cuartiles de gasto</strong> (NTILE)</li>
+          </ul>
+        </div>
+      </div>
+      <div style="padding:12px 20px;background:rgba(251,146,60,.04);border-top:1px solid var(--border);font-size:12px;color:var(--muted);">
+        💡 <strong style="color:var(--accent2)">Window vs GROUP BY:</strong> <code>GROUP BY</code> colapsa las filas en una por grupo. Las <strong>Window Functions mantienen todas las filas</strong> y agregan una columna calculada. Si necesitas el detalle Y el resumen en la misma fila → Window Function.
+      </div>
+    </div>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">ROW_NUMBER · RANK · DENSE_RANK</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">intermedio</span></div>
+      <pre><span class="cm">-- ROW_NUMBER: número único por fila</span>
+<span class="kw">SELECT</span>
+    nombre,
+    salario,
+    <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>) <span class="kw">AS</span> fila
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- RANK: con saltos (dos en 1° → el siguiente es 3°)</span>
+<span class="kw">SELECT</span>
+    nombre, salario,
+    <span class="fn">RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>) <span class="kw">AS</span> rank
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- DENSE_RANK: sin saltos (dos en 1° → el siguiente es 2°)</span>
+<span class="kw">SELECT</span>
+    nombre, salario,
+    <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>) <span class="kw">AS</span> drank
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- Ranking DENTRO de cada departamento</span>
+<span class="kw">SELECT</span>
+    nombre,
+    departamento,
+    salario,
+    <span class="fn">RANK</span>() <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> departamento
+        <span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>
+    ) <span class="kw">AS</span> rank_depto
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">SUM · AVG · COUNT con OVER</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">intermedio</span></div>
+      <pre><span class="cm">-- Total global sin GROUP BY (mantiene todas las filas)</span>
+<span class="kw">SELECT</span>
+    nombre,
+    salario,
+    <span class="fn">SUM</span>(salario) <span class="kw">OVER</span>() <span class="kw">AS</span> suma_global,
+    <span class="fn">AVG</span>(salario) <span class="kw">OVER</span>() <span class="kw">AS</span> prom_global
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- Agrupado por ventana (PARTITION BY)</span>
+<span class="kw">SELECT</span>
+    nombre,
+    departamento,
+    salario,
+    <span class="fn">AVG</span>(salario) <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> departamento
+    ) <span class="kw">AS</span> prom_depto,
+    salario <span class="op">-</span> <span class="fn">AVG</span>(salario) <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> departamento
+    ) <span class="kw">AS</span> vs_promedio
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- % del total por grupo</span>
+<span class="kw">SELECT</span>
+    nombre,
+    monto,
+    <span class="fn">ROUND</span>(monto <span class="op">*</span> <span class="num">100.0</span> /
+        <span class="fn">SUM</span>(monto) <span class="kw">OVER</span>(), <span class="num">2</span>) <span class="kw">AS</span> pct_total
+<span class="kw">FROM</span> <span class="tbl">ventas</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">SUM acumulada (Running Total)</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">intermedio</span></div>
+      <pre><span class="cm">-- Suma acumulada por fecha</span>
+<span class="kw">SELECT</span>
+    fecha,
+    monto,
+    <span class="fn">SUM</span>(monto) <span class="kw">OVER</span> (
+        <span class="kw">ORDER BY</span> fecha
+    ) <span class="kw">AS</span> acumulado
+<span class="kw">FROM</span> <span class="tbl">ventas</span>;
+
+<span class="cm">-- Acumulado DENTRO de cada año</span>
+<span class="kw">SELECT</span>
+    fecha,
+    monto,
+    YEAR(fecha) <span class="kw">AS</span> anio,
+    <span class="fn">SUM</span>(monto) <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> YEAR(fecha)
+        <span class="kw">ORDER BY</span> fecha
+    ) <span class="kw">AS</span> acumulado_anio
+<span class="kw">FROM</span> <span class="tbl">ventas</span>;
+
+<span class="cm">-- Conteo acumulado</span>
+<span class="kw">SELECT</span>
+    fecha,
+    <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> fecha) <span class="kw">AS</span> total_acum
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">LAG · LEAD — filas anterior/siguiente</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">intermedio</span></div>
+      <pre><span class="cm">-- LAG: valor de la fila ANTERIOR</span>
+<span class="kw">SELECT</span>
+    fecha,
+    monto,
+    <span class="fn">LAG</span>(monto) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> fecha) <span class="kw">AS</span> monto_anterior,
+    monto <span class="op">-</span> <span class="fn">LAG</span>(monto) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> fecha) <span class="kw">AS</span> diferencia
+<span class="kw">FROM</span> <span class="tbl">ventas</span>;
+
+<span class="cm">-- LAG con N filas atrás y valor default</span>
+<span class="fn">LAG</span>(monto, <span class="num">2</span>, <span class="num">0</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> fecha)
+<span class="cm">-- 2 filas atrás, 0 si no existe</span>
+
+<span class="cm">-- LEAD: valor de la fila SIGUIENTE</span>
+<span class="kw">SELECT</span>
+    fecha,
+    monto,
+    <span class="fn">LEAD</span>(monto) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> fecha) <span class="kw">AS</span> proximo
+<span class="kw">FROM</span> <span class="tbl">ventas</span>;
+
+<span class="cm">-- % crecimiento vs mes anterior</span>
+<span class="kw">SELECT</span>
+    mes,
+    ventas,
+    <span class="fn">ROUND</span>((ventas <span class="op">-</span> <span class="fn">LAG</span>(ventas) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> mes))
+         <span class="op">*</span> <span class="num">100.0</span>
+         <span class="op">/</span> <span class="fn">LAG</span>(ventas) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> mes), <span class="num">2</span>) <span class="kw">AS</span> pct_cambio
+<span class="kw">FROM</span> <span class="tbl">ventas_mensual</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">NTILE · FIRST_VALUE · LAST_VALUE</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">intermedio</span></div>
+      <pre><span class="cm">-- NTILE: divide en N grupos iguales (cuartiles, deciles)</span>
+<span class="kw">SELECT</span>
+    nombre,
+    salario,
+    <span class="fn">NTILE</span>(<span class="num">4</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> salario) <span class="kw">AS</span> cuartil
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+<span class="cm">-- cuartil 1 = más bajos, 4 = más altos</span>
+
+<span class="cm">-- FIRST_VALUE: primer valor de la ventana</span>
+<span class="kw">SELECT</span>
+    nombre,
+    departamento,
+    salario,
+    <span class="fn">FIRST_VALUE</span>(nombre) <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> departamento
+        <span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>
+    ) <span class="kw">AS</span> mejor_pagado_depto
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- Truco: top 1 por grupo con ROW_NUMBER en CTE</span>
+<span class="kw">WITH</span> ranked <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> <span class="op">*</span>,
+        <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+            <span class="kw">PARTITION BY</span> depto_id
+            <span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>
+        ) <span class="kw">AS</span> rn
+    <span class="kw">FROM</span> <span class="tbl">empleados</span>
+)
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> ranked <span class="kw">WHERE</span> rn <span class="op">=</span> <span class="num">1</span>;</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     10 · FUNCIONES DE TEXTO
+══════════════════════════════════════ -->
+<section id="s10">
+  <div class="sh">
+    <div class="snum">10</div>
+    <div class="sicon" style="background:rgba(244,114,182,.1)">🔤</div>
+    <h2>Funciones de Texto</h2>
+  </div>
+
+  <div class="g">
+    <div class="card">
+      <div class="ch"><span class="ct">CONCAT · UPPER · LOWER · LENGTH</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tp">básico</span></div>
+      <pre><span class="cm">-- Concatenar</span>
+<span class="kw">SELECT CONCAT</span>(nombre, <span class="str">' '</span>, apellido) <span class="kw">AS</span> nombre_completo
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- CONCAT con más partes</span>
+<span class="kw">SELECT CONCAT</span>(calle, <span class="str">', '</span>, ciudad, <span class="str">', '</span>, pais) <span class="kw">AS</span> direccion
+<span class="kw">FROM</span> <span class="tbl">clientes</span>;
+
+<span class="cm">-- Mayúsculas / Minúsculas</span>
+<span class="kw">SELECT UPPER</span>(nombre)    <span class="kw">AS</span> nombre_may
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="kw">SELECT LOWER</span>(email)     <span class="kw">AS</span> email_min
+<span class="kw">FROM</span> <span class="tbl">clientes</span>;
+
+<span class="cm">-- Longitud de texto</span>
+<span class="kw">SELECT</span> nombre, <span class="kw">LENGTH</span>(nombre) <span class="kw">AS</span> caracteres
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">ORDER BY</span> caracteres <span class="kw">DESC</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">TRIM · SUBSTRING · REPLACE</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tp">básico</span></div>
+      <pre><span class="cm">-- Quitar espacios (izq y der)</span>
+<span class="kw">SELECT TRIM</span>(nombre) <span class="kw">FROM</span> <span class="tbl">clientes</span>;
+<span class="kw">SELECT LTRIM</span>(nombre) <span class="kw">FROM</span> <span class="tbl">clientes</span>; <span class="cm">-- solo izquierda</span>
+<span class="kw">SELECT RTRIM</span>(nombre) <span class="kw">FROM</span> <span class="tbl">clientes</span>; <span class="cm">-- solo derecha</span>
+
+<span class="cm">-- Extraer parte de un texto</span>
+<span class="cm">-- SUBSTRING(texto, inicio, longitud)</span>
+<span class="kw">SELECT SUBSTRING</span>(telefono, <span class="num">1</span>, <span class="num">3</span>) <span class="kw">AS</span> codigo_area
+<span class="kw">FROM</span> <span class="tbl">clientes</span>;
+
+<span class="cm">-- Alias: SUBSTR funciona igual en MySQL/SQLite</span>
+<span class="kw">SELECT SUBSTR</span>(nombre, <span class="num">1</span>, <span class="num">1</span>) <span class="kw">AS</span> inicial
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- Reemplazar texto</span>
+<span class="kw">SELECT REPLACE</span>(telefono, <span class="str">'-'</span>, <span class="str">''</span>) <span class="kw">AS</span> tel_limpio
+<span class="kw">FROM</span> <span class="tbl">clientes</span>;
+
+<span class="kw">SELECT REPLACE</span>(descripcion, <span class="str">'viejo'</span>, <span class="str">'nuevo'</span>)
+<span class="kw">FROM</span> <span class="tbl">productos</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">LEFT · RIGHT · POSITION · LPAD · RPAD</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tp">intermedio</span></div>
+      <pre><span class="cm">-- LEFT: primeros N caracteres</span>
+<span class="kw">SELECT LEFT</span>(nombre, <span class="num">3</span>) <span class="kw">AS</span> iniciales
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- RIGHT: últimos N caracteres</span>
+<span class="kw">SELECT RIGHT</span>(codigo, <span class="num">4</span>) <span class="kw">AS</span> sufijo
+<span class="kw">FROM</span> <span class="tbl">productos</span>;
+
+<span class="cm">-- POSITION / LOCATE: posición de un texto</span>
+<span class="kw">SELECT</span>
+    email,
+    <span class="kw">POSITION</span>(<span class="str">'@'</span> <span class="kw">IN</span> email) <span class="kw">AS</span> pos_arroba
+<span class="kw">FROM</span> <span class="tbl">clientes</span>;
+
+<span class="cm">-- LPAD: rellenar por la izquierda</span>
+<span class="kw">SELECT LPAD</span>(id, <span class="num">6</span>, <span class="str">'0'</span>) <span class="kw">AS</span> id_formateado
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>;
+<span class="cm">-- 42 → '000042'</span>
+
+<span class="cm">-- RPAD: rellenar por la derecha</span>
+<span class="kw">SELECT RPAD</span>(nombre, <span class="num">20</span>, <span class="str">'.'</span>) <span class="kw">FROM</span> <span class="tbl">productos</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">COALESCE · NULLIF</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tp">intermedio</span></div>
+      <pre><span class="cm">-- COALESCE: devuelve el primer valor no NULL</span>
+<span class="kw">SELECT</span>
+    nombre,
+    <span class="kw">COALESCE</span>(telefono, email, <span class="str">'Sin contacto'</span>) <span class="kw">AS</span> contacto
+<span class="kw">FROM</span> <span class="tbl">clientes</span>;
+
+<span class="cm">-- Muy útil en JOINs con LEFT JOIN</span>
+<span class="kw">SELECT</span>
+    c.nombre,
+    <span class="kw">COALESCE</span>(<span class="kw">SUM</span>(o.monto), <span class="num">0</span>) <span class="kw">AS</span> total_gastado
+<span class="kw">FROM</span> <span class="tbl">clientes</span> <span class="kw">AS</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">ordenes</span> <span class="kw">AS</span> o <span class="kw">ON</span> c.id <span class="op">=</span> o.cliente_id
+<span class="kw">GROUP BY</span> c.id, c.nombre;
+
+<span class="cm">-- NULLIF: devuelve NULL si ambos son iguales</span>
+<span class="kw">SELECT NULLIF</span>(stock, <span class="num">0</span>) <span class="kw">FROM</span> <span class="tbl">productos</span>;
+<span class="cm">-- Evita división por cero</span>
+<span class="kw">SELECT</span> total <span class="op">/</span> <span class="kw">NULLIF</span>(cantidad, <span class="num">0</span>) <span class="kw">FROM</span> <span class="tbl">ventas</span>;</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     11 · FUNCIONES DE FECHA
+══════════════════════════════════════ -->
+<section id="s11">
+  <div class="sh">
+    <div class="snum">11</div>
+    <div class="sicon" style="background:rgba(167,139,250,.1)">📅</div>
+    <h2>Funciones de Fecha y Tiempo</h2>
+  </div>
+
+  <div class="callout">
+    <span class="ci">📅</span>
+    <div>Los nombres de funciones varían según el motor de BD. Los ejemplos están en <strong>MySQL/MariaDB</strong>. Se añaden equivalentes de <strong>PostgreSQL</strong> donde difieren.</div>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">Fecha actual &amp; extraer partes</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tv">básico</span></div>
+      <pre><span class="cm">-- Fecha/hora actual</span>
+<span class="kw">SELECT NOW</span>();              <span class="cm">-- fecha + hora actual</span>
+<span class="kw">SELECT CURDATE</span>();          <span class="cm">-- solo fecha (MySQL)</span>
+<span class="kw">SELECT CURRENT_DATE</span>;       <span class="cm">-- estándar SQL</span>
+<span class="kw">SELECT CURRENT_TIMESTAMP</span>;  <span class="cm">-- fecha + hora estándar</span>
+
+<span class="cm">-- Extraer partes de fecha</span>
+<span class="kw">SELECT</span>
+    fecha,
+    <span class="kw">YEAR</span>(fecha)    <span class="kw">AS</span> anio,
+    <span class="kw">MONTH</span>(fecha)   <span class="kw">AS</span> mes,
+    <span class="kw">DAY</span>(fecha)     <span class="kw">AS</span> dia,
+    <span class="kw">HOUR</span>(fecha)    <span class="kw">AS</span> hora,
+    <span class="kw">MINUTE</span>(fecha)  <span class="kw">AS</span> minuto,
+    <span class="kw">WEEKDAY</span>(fecha) <span class="kw">AS</span> dia_semana
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>;
+
+<span class="cm">-- PostgreSQL usa EXTRACT</span>
+<span class="kw">SELECT EXTRACT</span>(YEAR  <span class="kw">FROM</span> fecha) <span class="kw">AS</span> anio,
+       <span class="kw">EXTRACT</span>(MONTH <span class="kw">FROM</span> fecha) <span class="kw">AS</span> mes
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">DATE_ADD · DATE_SUB · DATEDIFF</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tv">intermedio</span></div>
+      <pre><span class="cm">-- Sumar / restar días a una fecha</span>
+<span class="kw">SELECT DATE_ADD</span>(<span class="kw">NOW</span>(), <span class="kw">INTERVAL</span> <span class="num">30</span> <span class="kw">DAY</span>)  <span class="kw">AS</span> en_30_dias;
+<span class="kw">SELECT DATE_ADD</span>(<span class="kw">NOW</span>(), <span class="kw">INTERVAL</span> <span class="num">3</span> <span class="kw">MONTH</span>) <span class="kw">AS</span> en_3_meses;
+<span class="kw">SELECT DATE_SUB</span>(<span class="kw">NOW</span>(), <span class="kw">INTERVAL</span> <span class="num">1</span> <span class="kw">YEAR</span>)  <span class="kw">AS</span> hace_1_anio;
+
+<span class="cm">-- Diferencia entre fechas en días</span>
+<span class="kw">SELECT DATEDIFF</span>(fecha_fin, fecha_inicio) <span class="kw">AS</span> dias
+<span class="kw">FROM</span> <span class="tbl">proyectos</span>;
+
+<span class="cm">-- Antigüedad del cliente en días</span>
+<span class="kw">SELECT</span>
+    nombre,
+    <span class="kw">DATEDIFF</span>(<span class="kw">CURDATE</span>(), fecha_registro) <span class="kw">AS</span> dias_cliente
+<span class="kw">FROM</span> <span class="tbl">clientes</span>
+<span class="kw">ORDER BY</span> dias_cliente <span class="kw">DESC</span>;
+
+<span class="cm">-- PostgreSQL: usa + INTERVAL y DATE_PART</span>
+<span class="kw">SELECT</span> <span class="kw">NOW</span>() <span class="op">+</span> <span class="kw">INTERVAL</span> <span class="str">'30 days'</span>;
+<span class="kw">SELECT</span> fecha_fin <span class="op">-</span> fecha_inicio <span class="kw">AS</span> diferencia
+<span class="kw">FROM</span> <span class="tbl">proyectos</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">DATE_FORMAT · FORMAT de fecha</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tv">intermedio</span></div>
+      <pre><span class="cm">-- Formatear fecha como texto (MySQL)</span>
+<span class="kw">SELECT DATE_FORMAT</span>(fecha, <span class="str">'%d/%m/%Y'</span>)  <span class="kw">AS</span> fecha_mx
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>;
+<span class="cm">-- → '25/12/2024'</span>
+
+<span class="kw">SELECT DATE_FORMAT</span>(fecha, <span class="str">'%Y-%m'</span>)      <span class="kw">AS</span> anio_mes
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>;
+<span class="cm">-- → '2024-12'</span>
+
+<span class="kw">SELECT DATE_FORMAT</span>(fecha, <span class="str">'%M %Y'</span>)      <span class="kw">AS</span> mes_nombre
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>;
+<span class="cm">-- → 'December 2024'</span>
+
+<span class="cm">-- Ventas por mes (agrupar)</span>
+<span class="kw">SELECT</span>
+    <span class="kw">DATE_FORMAT</span>(fecha, <span class="str">'%Y-%m'</span>) <span class="kw">AS</span> mes,
+    <span class="kw">COUNT</span>(<span class="op">*</span>)                    <span class="kw">AS</span> ordenes,
+    <span class="kw">SUM</span>(monto)                   <span class="kw">AS</span> total
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>
+<span class="kw">GROUP BY</span> <span class="kw">DATE_FORMAT</span>(fecha, <span class="str">'%Y-%m'</span>)
+<span class="kw">ORDER BY</span> mes;
+
+<span class="cm">-- PostgreSQL usa TO_CHAR</span>
+<span class="kw">SELECT TO_CHAR</span>(fecha, <span class="str">'YYYY-MM'</span>) <span class="kw">AS</span> mes
+<span class="kw">FROM</span> <span class="tbl">ordenes</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Tabla referencia — funciones de fecha</span><span class="tag tg">ref</span></div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Función MySQL</th><th>PostgreSQL</th><th>Resultado</th></tr></thead>
+          <tbody>
+            <tr><td>NOW()</td><td>NOW()</td><td>Fecha y hora actual</td></tr>
+            <tr><td>CURDATE()</td><td>CURRENT_DATE</td><td>Solo fecha actual</td></tr>
+            <tr><td>YEAR(f)</td><td>EXTRACT(YEAR FROM f)</td><td>Año de la fecha</td></tr>
+            <tr><td>MONTH(f)</td><td>EXTRACT(MONTH FROM f)</td><td>Mes (1-12)</td></tr>
+            <tr><td>DAY(f)</td><td>EXTRACT(DAY FROM f)</td><td>Día (1-31)</td></tr>
+            <tr><td>WEEKDAY(f)</td><td>EXTRACT(DOW FROM f)</td><td>Día de semana</td></tr>
+            <tr><td>DATEDIFF(a,b)</td><td>a - b</td><td>Días de diferencia</td></tr>
+            <tr><td>DATE_ADD(f, INTERVAL n DAY)</td><td>f + INTERVAL 'n days'</td><td>Sumar días</td></tr>
+            <tr><td>DATE_FORMAT(f,'%Y-%m')</td><td>TO_CHAR(f,'YYYY-MM')</td><td>Formatear fecha</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     12 · CASE WHEN / CONDICIONALES
+══════════════════════════════════════ -->
+<section id="s12">
+  <div class="sh">
+    <div class="snum">12</div>
+    <div class="sicon" style="background:rgba(251,191,36,.1)">🔀</div>
+    <h2>Condicionales — CASE WHEN</h2>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">CASE WHEN básico</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag ty">básico</span></div>
+      <pre><span class="cm">-- CASE simple: crear categorías</span>
+<span class="kw">SELECT</span>
+    nombre,
+    salario,
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> salario <span class="op"><</span> <span class="num">30000</span>  <span class="kw">THEN</span> <span class="str">'Bajo'</span>
+        <span class="kw">WHEN</span> salario <span class="op"><</span> <span class="num">60000</span>  <span class="kw">THEN</span> <span class="str">'Medio'</span>
+        <span class="kw">WHEN</span> salario <span class="op"><</span> <span class="num">100000</span> <span class="kw">THEN</span> <span class="str">'Alto'</span>
+        <span class="kw">ELSE</span> <span class="str">'Muy Alto'</span>
+    <span class="kw">END AS</span> categoria
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- CASE con igualdad directa</span>
+<span class="kw">SELECT</span>
+    nombre,
+    <span class="kw">CASE</span> estado
+        <span class="kw">WHEN</span> <span class="str">'A'</span> <span class="kw">THEN</span> <span class="str">'Activo'</span>
+        <span class="kw">WHEN</span> <span class="str">'I'</span> <span class="kw">THEN</span> <span class="str">'Inactivo'</span>
+        <span class="kw">WHEN</span> <span class="str">'S'</span> <span class="kw">THEN</span> <span class="str">'Suspendido'</span>
+        <span class="kw">ELSE</span> <span class="str">'Desconocido'</span>
+    <span class="kw">END AS</span> estado_desc
+<span class="kw">FROM</span> <span class="tbl">clientes</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">CASE en ORDER BY · WHERE · GROUP BY</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag ty">intermedio</span></div>
+      <pre><span class="cm">-- CASE en ORDER BY: orden personalizado</span>
+<span class="kw">SELECT</span> nombre, prioridad
+<span class="kw">FROM</span> <span class="tbl">tareas</span>
+<span class="kw">ORDER BY</span>
+    <span class="kw">CASE</span> prioridad
+        <span class="kw">WHEN</span> <span class="str">'Alta'</span>  <span class="kw">THEN</span> <span class="num">1</span>
+        <span class="kw">WHEN</span> <span class="str">'Media'</span> <span class="kw">THEN</span> <span class="num">2</span>
+        <span class="kw">WHEN</span> <span class="str">'Baja'</span>  <span class="kw">THEN</span> <span class="num">3</span>
+    <span class="kw">END</span>;
+
+<span class="cm">-- CASE en GROUP BY: reagrupar categorías</span>
+<span class="kw">SELECT</span>
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> edad <span class="op"><</span> <span class="num">25</span> <span class="kw">THEN</span> <span class="str">'Joven'</span>
+        <span class="kw">WHEN</span> edad <span class="op"><</span> <span class="num">45</span> <span class="kw">THEN</span> <span class="str">'Adulto'</span>
+        <span class="kw">ELSE</span> <span class="str">'Senior'</span>
+    <span class="kw">END AS</span> grupo_edad,
+    <span class="kw">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> cantidad
+<span class="kw">FROM</span> <span class="tbl">clientes</span>
+<span class="kw">GROUP BY</span> grupo_edad;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">CASE + SUM — pivot manual</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag ty">intermedio</span></div>
+      <pre><span class="cm">-- Contar/sumar por categoría en columnas (PIVOT)</span>
+<span class="kw">SELECT</span>
+    departamento,
+    <span class="kw">SUM</span>(<span class="kw">CASE WHEN</span> genero <span class="op">=</span> <span class="str">'M'</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> hombres,
+    <span class="kw">SUM</span>(<span class="kw">CASE WHEN</span> genero <span class="op">=</span> <span class="str">'F'</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> mujeres,
+    <span class="kw">COUNT</span>(<span class="op">*</span>)                                        <span class="kw">AS</span> total
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">GROUP BY</span> departamento;
+
+<span class="cm">-- Ventas por trimestre en columnas</span>
+<span class="kw">SELECT</span>
+    YEAR(fecha) <span class="kw">AS</span> anio,
+    <span class="kw">SUM</span>(<span class="kw">CASE WHEN MONTH</span>(fecha) <span class="kw">BETWEEN</span> <span class="num">1</span> <span class="kw">AND</span> <span class="num">3</span>   <span class="kw">THEN</span> monto <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> Q1,
+    <span class="kw">SUM</span>(<span class="kw">CASE WHEN MONTH</span>(fecha) <span class="kw">BETWEEN</span> <span class="num">4</span> <span class="kw">AND</span> <span class="num">6</span>   <span class="kw">THEN</span> monto <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> Q2,
+    <span class="kw">SUM</span>(<span class="kw">CASE WHEN MONTH</span>(fecha) <span class="kw">BETWEEN</span> <span class="num">7</span> <span class="kw">AND</span> <span class="num">9</span>   <span class="kw">THEN</span> monto <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> Q3,
+    <span class="kw">SUM</span>(<span class="kw">CASE WHEN MONTH</span>(fecha) <span class="kw">BETWEEN</span> <span class="num">10</span> <span class="kw">AND</span> <span class="num">12</span> <span class="kw">THEN</span> monto <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> Q4
+<span class="kw">FROM</span> <span class="tbl">ventas</span>
+<span class="kw">GROUP BY</span> YEAR(fecha)
+<span class="kw">ORDER BY</span> anio;</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     13 · DDL / DML BÁSICO
+══════════════════════════════════════ -->
+<section id="s13">
+  <div class="sh">
+    <div class="snum">13</div>
+    <div class="sicon" style="background:rgba(56,189,248,.1)">🏗️</div>
+    <h2>DDL &amp; DML — Crear, Insertar, Actualizar, Eliminar</h2>
+  </div>
+
+  <div class="callout">
+    <span class="ci">🏗️</span>
+    <div><strong>DDL</strong> (Data Definition Language): <code>CREATE, ALTER, DROP</code> — define la estructura. <strong>DML</strong> (Data Manipulation Language): <code>INSERT, UPDATE, DELETE</code> — manipula los datos.</div>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">CREATE TABLE</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tb">básico</span></div>
+      <pre><span class="kw">CREATE TABLE</span> <span class="tbl">empleados</span> (
+    id          <span class="fn">INT</span>           <span class="kw">PRIMARY KEY AUTO_INCREMENT</span>,
+    nombre      <span class="fn">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL</span>,
+    apellido    <span class="fn">VARCHAR</span>(<span class="num">100</span>) <span class="kw">NOT NULL</span>,
+    email       <span class="fn">VARCHAR</span>(<span class="num">200</span>) <span class="kw">UNIQUE</span>,
+    salario     <span class="fn">DECIMAL</span>(<span class="num">10</span>,<span class="num">2</span>) <span class="kw">DEFAULT</span> <span class="num">0</span>,
+    depto_id    <span class="fn">INT</span>,
+    activo      <span class="fn">TINYINT</span>      <span class="kw">DEFAULT</span> <span class="num">1</span>,
+    fecha_alta  <span class="fn">DATE</span>         <span class="kw">DEFAULT</span> (<span class="kw">CURRENT_DATE</span>),
+    <span class="kw">FOREIGN KEY</span> (depto_id) <span class="kw">REFERENCES</span> <span class="tbl">departamentos</span>(id)
+);
+
+<span class="cm">-- Tipos de dato más comunes</span>
+<span class="cm">-- INT, BIGINT, SMALLINT  → enteros</span>
+<span class="cm">-- DECIMAL(p,s), FLOAT    → decimales</span>
+<span class="cm">-- VARCHAR(n), TEXT       → texto</span>
+<span class="cm">-- DATE, DATETIME, TIME   → fechas</span>
+<span class="cm">-- BOOLEAN / TINYINT      → verdadero/falso</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">ALTER TABLE</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tb">básico</span></div>
+      <pre><span class="cm">-- Agregar columna</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">empleados</span>
+    <span class="kw">ADD COLUMN</span> telefono <span class="fn">VARCHAR</span>(<span class="num">20</span>);
+
+<span class="cm">-- Modificar columna</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">empleados</span>
+    <span class="kw">MODIFY COLUMN</span> salario <span class="fn">DECIMAL</span>(<span class="num">12</span>,<span class="num">2</span>);
+
+<span class="cm">-- Renombrar columna (MySQL 8+)</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">empleados</span>
+    <span class="kw">RENAME COLUMN</span> telefono <span class="kw">TO</span> tel;
+
+<span class="cm">-- Eliminar columna</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">empleados</span>
+    <span class="kw">DROP COLUMN</span> tel;
+
+<span class="cm">-- Agregar clave foránea</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">empleados</span>
+    <span class="kw">ADD CONSTRAINT</span> fk_depto
+    <span class="kw">FOREIGN KEY</span> (depto_id)
+    <span class="kw">REFERENCES</span> <span class="tbl">departamentos</span>(id);</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">INSERT</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tg">básico</span></div>
+      <pre><span class="cm">-- Insertar una fila</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">empleados</span> (nombre, apellido, salario, depto_id)
+<span class="kw">VALUES</span> (<span class="str">'Ana'</span>, <span class="str">'García'</span>, <span class="num">45000</span>, <span class="num">3</span>);
+
+<span class="cm">-- Insertar múltiples filas</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">empleados</span> (nombre, apellido, salario, depto_id)
+<span class="kw">VALUES</span>
+    (<span class="str">'Luis'</span>, <span class="str">'Pérez'</span>, <span class="num">38000</span>, <span class="num">1</span>),
+    (<span class="str">'Mía'</span>,  <span class="str">'López'</span>, <span class="num">52000</span>, <span class="num">2</span>),
+    (<span class="str">'Juan'</span>, <span class="str">'Ruiz'</span>,  <span class="num">41000</span>, <span class="num">3</span>);
+
+<span class="cm">-- INSERT desde SELECT</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">empleados_backup</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> activo <span class="op">=</span> <span class="num">0</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">UPDATE</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">básico</span></div>
+      <pre><span class="cm">-- Actualizar una columna</span>
+<span class="kw">UPDATE</span> <span class="tbl">empleados</span>
+<span class="kw">SET</span> salario <span class="op">=</span> <span class="num">50000</span>
+<span class="kw">WHERE</span> id <span class="op">=</span> <span class="num">42</span>;
+
+<span class="cm">-- Actualizar varias columnas</span>
+<span class="kw">UPDATE</span> <span class="tbl">empleados</span>
+<span class="kw">SET</span>
+    salario  <span class="op">=</span> salario <span class="op">*</span> <span class="num">1.10</span>,
+    activo   <span class="op">=</span> <span class="num">1</span>
+<span class="kw">WHERE</span> departamento <span class="op">=</span> <span class="str">'Ventas'</span>
+  <span class="kw">AND</span> activo <span class="op">=</span> <span class="num">1</span>;
+
+<span class="cm">-- ⚠️ SIEMPRE usa WHERE en UPDATE
+--    sin WHERE, actualiza TODAS las filas</span>
+
+<span class="cm">-- UPDATE con JOIN (MySQL)</span>
+<span class="kw">UPDATE</span> <span class="tbl">empleados</span> <span class="kw">AS</span> e
+<span class="kw">INNER JOIN</span> <span class="tbl">departamentos</span> <span class="kw">AS</span> d <span class="kw">ON</span> e.depto_id <span class="op">=</span> d.id
+<span class="kw">SET</span> e.salario <span class="op">=</span> e.salario <span class="op">*</span> <span class="num">1.05</span>
+<span class="kw">WHERE</span> d.nombre_depto <span class="op">=</span> <span class="str">'TI'</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">DELETE · TRUNCATE · DROP</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tp">básico</span></div>
+      <pre><span class="cm">-- Eliminar filas específicas</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> id <span class="op">=</span> <span class="num">42</span>;
+
+<span class="cm">-- Eliminar con condición</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">logs</span>
+<span class="kw">WHERE</span> fecha <span class="op"><</span> <span class="str">'2020-01-01'</span>;
+
+<span class="cm">-- ⚠️ Sin WHERE → borra TODO</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">temporal</span>;  <span class="cm">-- lento, se puede deshacer</span>
+
+<span class="cm">-- TRUNCATE: vaciar tabla rápido (sin rollback)</span>
+<span class="kw">TRUNCATE TABLE</span> <span class="tbl">temporal</span>;
+
+<span class="cm">-- DROP: eliminar la tabla completa</span>
+<span class="kw">DROP TABLE</span> <span class="tbl">temporal</span>;
+
+<span class="cm">-- DROP seguro (si existe)</span>
+<span class="kw">DROP TABLE IF EXISTS</span> <span class="tbl">temporal</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Diferencias DELETE vs TRUNCATE vs DROP</span><span class="tag tg">ref</span></div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Comando</th><th>Qué borra</th><th>Rollback</th><th>WHERE</th><th>Velocidad</th></tr></thead>
+          <tbody>
+            <tr><td>DELETE</td><td>Filas</td><td>✅ Sí</td><td>✅ Sí</td><td>Lento</td></tr>
+            <tr><td>TRUNCATE</td><td>Todas las filas</td><td>❌ No</td><td>❌ No</td><td>Rápido</td></tr>
+            <tr><td>DROP</td><td>Tabla entera</td><td>❌ No</td><td>❌ No</td><td>Inmediato</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     14 · ¿QUÉ HERRAMIENTA USAR? — ÁRBOL DE DECISIÓN
+══════════════════════════════════════ -->
+<section id="s14">
+  <div class="sh">
+    <div class="snum">14</div>
+    <div class="sicon" style="background:rgba(74,222,128,.1)">🧠</div>
+    <h2>¿Qué herramienta usar? — Árbol de Decisión</h2>
+  </div>
+
+  <div class="callout">
+    <span class="ci">💡</span>
+    <div>Esta es la pregunta que todo JR se hace: <em>¿cuándo uso una subquery, cuándo una CTE y cuándo una window function?</em> Este árbol te da la respuesta según el problema que necesitas resolver.</div>
+  </div>
+
+  <div class="g g1">
+    <div class="card">
+      <div class="ch"><span class="ct">Árbol de decisión completo</span><span class="tag tg">ref esencial</span></div>
+      <pre style="font-size:12px;line-height:1.9;"><span class="cm">¿Necesitas FILTRAR basándote en datos de otra tabla?</span>
+  ├── SÍ, y la condición es una <span class="tbl">lista de IDs</span>           → <span class="kw">Subquery</span> con <span class="fn">IN / NOT IN</span>
+  │        Ej: tracks de artistas que... / álbumes que NO tienen...
+  │
+  └── SÍ, y la condición es un <span class="tbl">solo valor</span> (AVG, MAX...)   → <span class="kw">Subquery escalar</span> en <span class="fn">WHERE</span>
+           Ej: empleados que ganan más que el promedio
+
+<span class="cm">¿Necesitas un CÁLCULO por grupo sin perder el detalle de cada fila?</span>
+  └── SÍ  → <span class="kw">Window Function</span> con <span class="fn">PARTITION BY</span>
+           Ej: salario promedio del depto al lado de cada empleado
+
+<span class="cm">¿Necesitas NUMERAR, RANKEAR o ver la fila ANTERIOR/SIGUIENTE?</span>
+  └── SÍ  → <span class="kw">Window Function</span> (<span class="fn">ROW_NUMBER / RANK / LAG / LEAD</span>)
+           Ej: top 3 vendedores por región
+
+<span class="cm">¿Necesitas PREPARAR datos primero (COUNT, AVG) y luego FILTRAR sobre ellos?</span>
+  └── SÍ  → <span class="kw">CTE</span>
+           Ej: departamentos con más de 5 empleados
+           Nota: <span class="op">WHERE COUNT(*) &gt; 5</span> no funciona → WHERE va antes que COUNT
+
+<span class="cm">¿La query tiene subqueries anidadas ilegibles o lógica que se repite?</span>
+  └── SÍ  → <span class="kw">CTE</span> (hace el código legible y reutilizable)</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Tabla comparativa rápida</span><span class="tag tb">ref</span></div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Herramienta</th><th>Para qué sirve</th><th>Señal en el enunciado</th></tr></thead>
+          <tbody>
+            <tr><td>Subquery IN</td><td>Filtrar por lista de IDs de otra tabla</td><td>"tracks de artistas que...", "clientes que tienen..."</td></tr>
+            <tr><td>Subquery NOT IN</td><td>Excluir registros que aparecen en otra tabla</td><td>"que NO tienen", "sin ningún", "que nunca"</td></tr>
+            <tr><td>Subquery escalar</td><td>Comparar contra un solo valor calculado</td><td>"más que el promedio", "igual al máximo"</td></tr>
+            <tr><td>Window PARTITION BY</td><td>Cálculo por grupo sin colapsar filas</td><td>"junto a cada fila", "al lado de cada registro"</td></tr>
+            <tr><td>ROW_NUMBER / RANK</td><td>Numerar o rankear dentro de grupos</td><td>"el primero de cada", "top 3 de cada grupo"</td></tr>
+            <tr><td>LAG / LEAD</td><td>Comparar con fila anterior o siguiente</td><td>"diferencia con el anterior", "vs el siguiente mes"</td></tr>
+            <tr><td>CTE</td><td>Preparar datos para luego filtrarlos</td><td>"con más de N", "cuyo total sea", "donde el promedio"</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     15 · SUBQUERIES — REGLA DE LOS SALTOS
+══════════════════════════════════════ -->
+<section id="s15">
+  <div class="sh">
+    <div class="snum">15</div>
+    <div class="sicon" style="background:rgba(56,189,248,.1)">🔗</div>
+    <h2>Subqueries — Regla de los Saltos &amp; NOT IN</h2>
+  </div>
+
+  <div class="callout">
+    <span class="ci">🧩</span>
+    <div><strong>Regla de los saltos:</strong> pon un dedo en la tabla que <em>VES</em> y otro en la que <em>FILTRA</em>. El número de saltos = número de tablas que necesitas en la subquery. Léelas siempre <strong>de adentro hacia afuera</strong>.</div>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">Subquery escalar — 1 valor calculado</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tb">intermedio</span></div>
+      <pre><span class="cm">-- Cuando filtras con AVG, MAX, MIN, COUNT
+-- La subquery devuelve exactamente 1 valor</span>
+
+<span class="cm">-- Empleados que ganan más que el promedio</span>
+<span class="kw">SELECT</span> nombre, salario
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> salario <span class="op">></span> (
+    <span class="kw">SELECT AVG</span>(salario) <span class="kw">FROM</span> <span class="tbl">empleados</span>
+);
+
+<span class="cm">-- El empleado con el salario más alto</span>
+<span class="kw">SELECT</span> nombre, salario
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> salario <span class="op">=</span> (
+    <span class="kw">SELECT MAX</span>(salario) <span class="kw">FROM</span> <span class="tbl">empleados</span>
+);
+
+<span class="cm">-- También en SELECT (escalar por cada fila)</span>
+<span class="kw">SELECT</span> nombre, salario,
+    (<span class="kw">SELECT AVG</span>(salario) <span class="kw">FROM</span> <span class="tbl">empleados</span>) <span class="kw">AS</span> promedio_global
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+<span class="cm">-- Regla: devuelve exactamente 1 valor
+-- Si devuelve más → SQL lanza error</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Subquery con IN — 1 salto</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tb">intermedio</span></div>
+      <pre><span class="cm">-- Tabla que VES y tabla que FILTRA
+-- están separadas por 1 relación directa</span>
+
+<span class="cm">-- Clientes que hicieron pedidos en 2024</span>
+<span class="kw">SELECT</span> nombre
+<span class="kw">FROM</span> <span class="tbl">clientes</span>
+<span class="kw">WHERE</span> id <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> cliente_id
+    <span class="kw">FROM</span> <span class="tbl">pedidos</span>
+    <span class="kw">WHERE</span> YEAR(fecha) <span class="op">=</span> <span class="num">2024</span>
+);
+
+<span class="cm">-- Empleados del depto de 'Ventas'</span>
+<span class="kw">SELECT</span> nombre
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">WHERE</span> depto_id <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> id
+    <span class="kw">FROM</span> <span class="tbl">departamentos</span>
+    <span class="kw">WHERE</span> nombre <span class="op">=</span> <span class="str">'Ventas'</span>
+);
+<span class="cm">-- Regla de oro: la subquery devuelve el ID
+-- que usa la tabla exterior como puente</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Subquery con IN — 2 saltos</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tp">intermedio</span></div>
+      <pre><span class="cm">-- 2 saltos en el mapa → anidar 2 subqueries
+-- Léelas SIEMPRE de adentro hacia afuera</span>
+
+<span class="cm">-- Productos vendidos por clientes de 'CDMX'
+-- Producto → Pedido → Cliente</span>
+<span class="kw">SELECT</span> nombre
+<span class="kw">FROM</span> <span class="tbl">productos</span>
+<span class="kw">WHERE</span> id <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> producto_id
+    <span class="kw">FROM</span> <span class="tbl">pedidos</span>
+    <span class="kw">WHERE</span> cliente_id <span class="kw">IN</span> (
+        <span class="kw">SELECT</span> id
+        <span class="kw">FROM</span> <span class="tbl">clientes</span>
+        <span class="kw">WHERE</span> ciudad <span class="op">=</span> <span class="str">'CDMX'</span>
+    )
+);
+
+<span class="cm">-- Lectura de adentro hacia afuera:
+-- 1. clientes devuelve id
+-- 2. pedidos recibe cliente_id → devuelve producto_id
+-- 3. productos recibe id → muestra nombre</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">NOT IN — los que no aparecen</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tp">intermedio</span></div>
+      <pre><span class="cm">-- Clientes que NUNCA hicieron un pedido</span>
+<span class="kw">SELECT</span> nombre
+<span class="kw">FROM</span> <span class="tbl">clientes</span>
+<span class="kw">WHERE</span> id <span class="kw">NOT IN</span> (
+    <span class="kw">SELECT</span> cliente_id <span class="kw">FROM</span> <span class="tbl">pedidos</span>
+);
+
+<span class="cm">-- ⚠️ PELIGRO: si la subquery devuelve algún NULL
+-- NOT IN retorna vacío — siempre filtra NULLs</span>
+<span class="kw">WHERE</span> id <span class="kw">NOT IN</span> (
+    <span class="kw">SELECT</span> cliente_id <span class="kw">FROM</span> <span class="tbl">pedidos</span>
+    <span class="kw">WHERE</span> cliente_id <span class="kw">IS NOT NULL</span>  <span class="cm">-- ✅ seguro</span>
+)
+
+<span class="cm">-- Alternativa más segura: NOT EXISTS</span>
+<span class="kw">SELECT</span> nombre <span class="kw">FROM</span> <span class="tbl">clientes</span> c
+<span class="kw">WHERE NOT EXISTS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> <span class="tbl">pedidos</span> p
+    <span class="kw">WHERE</span> p.cliente_id <span class="op">=</span> c.id
+);
+<span class="cm">-- NOT EXISTS es inmune a NULLs ✅</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Las 4 preguntas para resolver cualquier subquery</span><span class="tag tg">método</span></div>
+      <div style="padding:16px 18px;display:grid;grid-template-columns:auto 1fr;gap:12px 18px;align-items:start;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--accent);font-weight:700;">1.</div>
+        <div style="font-size:13px;line-height:1.5;"><strong>¿Qué quiero VER?</strong> → tabla del FROM exterior</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--accent);font-weight:700;">2.</div>
+        <div style="font-size:13px;line-height:1.5;"><strong>¿Qué FILTRA?</strong> → tabla de la subquery más interna</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--accent);font-weight:700;">3.</div>
+        <div style="font-size:13px;line-height:1.5;"><strong>¿Cuántos SALTOS?</strong> → saltos entre tablas = subqueries anidadas</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--accent);font-weight:700;">4.</div>
+        <div style="font-size:13px;line-height:1.5;"><strong>¿IN o NOT IN?</strong> → ¿quiero los que SÍ están o los que NO están en la lista?</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     16 · WINDOW FUNCTIONS — PROFUNDIDAD
+══════════════════════════════════════ -->
+<section id="s16">
+  <div class="sh">
+    <div class="snum">16</div>
+    <div class="sicon" style="background:rgba(251,146,60,.1)">🪟</div>
+    <h2>Window Functions — GROUP BY vs PARTITION BY &amp; ORDER BY en OVER</h2>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">GROUP BY vs PARTITION BY — la diferencia clave</span><span class="tag to">crítico</span></div>
+      <div style="padding:0;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border);">
+          <div style="padding:14px 16px;border-right:1px solid var(--border);">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--op);margin-bottom:8px;">GROUP BY ❌ colapsa filas</div>
+            <pre style="background:transparent;padding:0;font-size:11.5px;"><span class="kw">SELECT</span> depto_id,
+    <span class="fn">AVG</span>(salario) <span class="kw">AS</span> prom
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">GROUP BY</span> depto_id;
+<span class="cm">-- 1 fila por depto
+-- Pierdes el nombre del empleado</span></pre>
+          </div>
+          <div style="padding:14px 16px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent3);margin-bottom:8px;">PARTITION BY ✅ mantiene filas</div>
+            <pre style="background:transparent;padding:0;font-size:11.5px;"><span class="kw">SELECT</span> nombre, depto_id,
+    <span class="fn">AVG</span>(salario) <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> depto_id
+    ) <span class="kw">AS</span> prom_depto
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+<span class="cm">-- 1 fila por empleado
+-- + promedio del depto en cada fila ✅</span></pre>
+          </div>
+        </div>
+        <div style="padding:10px 16px;font-size:12px;color:var(--muted);">
+          💡 <strong style="color:var(--accent6)">Regla:</strong> ¿necesitas el resumen <em>y</em> el detalle en la misma fila? → <code>PARTITION BY</code>. ¿Solo el resumen? → <code>GROUP BY</code>.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">ORDER BY dentro vs fuera del OVER</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">crítico</span></div>
+      <pre><span class="cm">-- ORDER BY FUERA del OVER
+-- → solo ordena lo que ves en pantalla</span>
+<span class="kw">SELECT</span> nombre, salario
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>;  <span class="cm">-- ordena el resultado final</span>
+
+<span class="cm">-- ORDER BY DENTRO del OVER
+-- → controla cómo se acumula el cálculo fila a fila</span>
+<span class="kw">SELECT</span> nombre, salario,
+    <span class="fn">SUM</span>(salario) <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> depto_id
+        <span class="kw">ORDER BY</span> fecha_ingreso  <span class="cm">-- ← acumula en este orden</span>
+    ) <span class="kw">AS</span> salario_acumulado
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+<span class="cm">-- Sin ORDER BY en OVER → total fijo del grupo en cada fila
+-- Con ORDER BY en OVER → suma crece fila a fila ✅
+
+-- Ambos juntos (muy común en práctica)</span>
+<span class="kw">SELECT</span> nombre, fecha_ingreso, salario,
+    <span class="fn">SUM</span>(salario) <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> depto_id
+        <span class="kw">ORDER BY</span> fecha_ingreso
+    ) <span class="kw">AS</span> acumulado
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">ORDER BY</span> depto_id, fecha_ingreso;  <span class="cm">-- ordena el resultado</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">ROW_NUMBER vs RANK vs DENSE_RANK</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">intermedio</span></div>
+      <pre><span class="cm">-- ROW_NUMBER: siempre único (1,2,3,4...)</span>
+<span class="kw">SELECT</span> nombre,
+    <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> depto_id
+        <span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>
+    ) <span class="kw">AS</span> num_fila
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- RANK: empates repiten, salta el siguiente (1,2,2,4)</span>
+<span class="kw">SELECT</span> nombre, salario,
+    <span class="fn">RANK</span>() <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> depto_id
+        <span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>
+    ) <span class="kw">AS</span> ranking
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- DENSE_RANK: empates repiten, NO salta (1,2,2,3)</span>
+<span class="kw">SELECT</span> nombre, salario,
+    <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> depto_id
+        <span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>
+    ) <span class="kw">AS</span> dense_rank
+<span class="kw">FROM</span> <span class="tbl">empleados</span>;
+
+<span class="cm">-- Truco: top 1 por grupo sin LIMIT</span>
+<span class="kw">WITH</span> ranked <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> <span class="op">*</span>,
+        <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+            <span class="kw">PARTITION BY</span> depto_id
+            <span class="kw">ORDER BY</span> salario <span class="kw">DESC</span>
+        ) <span class="kw">AS</span> rn
+    <span class="kw">FROM</span> <span class="tbl">empleados</span>
+)
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> ranked <span class="kw">WHERE</span> rn <span class="op">=</span> <span class="num">1</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Guía ¿cuándo usar cada función de ventana?</span><span class="tag tg">ref</span></div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Si el enunciado dice...</th><th>Usa</th><th>ORDER BY en OVER</th></tr></thead>
+          <tbody>
+            <tr><td>"total / promedio del grupo junto a cada fila"</td><td>SUM / AVG / COUNT OVER (PARTITION BY)</td><td>No necesario</td></tr>
+            <tr><td>"acumulado / progresivo / corriente"</td><td>SUM / COUNT OVER (PARTITION BY + ORDER BY)</td><td>Sí, obligatorio</td></tr>
+            <tr><td>"el primero / único de cada grupo"</td><td>ROW_NUMBER = 1</td><td>Sí, obligatorio</td></tr>
+            <tr><td>"top N / rankear / puede haber empates"</td><td>RANK o DENSE_RANK</td><td>Sí, obligatorio</td></tr>
+            <tr><td>"comparar con la fila anterior"</td><td>LAG(col)</td><td>Sí, obligatorio</td></tr>
+            <tr><td>"comparar con la fila siguiente"</td><td>LEAD(col)</td><td>Sí, obligatorio</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     17 · CTEs — POR QUÉ EXISTEN & REGLA DE CONTEO
+══════════════════════════════════════ -->
+<section id="s17">
+  <div class="sh">
+    <div class="snum">17</div>
+    <div class="sicon" style="background:rgba(167,139,250,.1)">📦</div>
+    <h2>CTEs — Por qué existen &amp; Regla de Conteo</h2>
+  </div>
+
+  <div class="callout tip">
+    <span class="ci">✅</span>
+    <div>Las CTEs nacen para resolver un problema concreto: <strong>no puedes filtrar directamente sobre el resultado de una agregación</strong>. <code>WHERE COUNT(*) &gt; 10</code> nunca funciona porque WHERE se ejecuta ANTES que COUNT. La CTE resuelve esto: primero calculas, luego filtras.</div>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">El problema que resuelven las CTEs</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tv">crítico</span></div>
+      <pre><span class="cm">-- ❌ Esto NO funciona — WHERE va antes que COUNT</span>
+<span class="kw">SELECT</span> depto_id, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> total
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">GROUP BY</span> depto_id
+<span class="kw">WHERE</span> total <span class="op">></span> <span class="num">5</span>;  <span class="cm">-- ❌ SQL no conoce "total" aquí</span>
+
+<span class="cm">-- ✅ Con HAVING (solo para condiciones de agregación)</span>
+<span class="kw">SELECT</span> depto_id, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> total
+<span class="kw">FROM</span> <span class="tbl">empleados</span>
+<span class="kw">GROUP BY</span> depto_id
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">></span> <span class="num">5</span>;  <span class="cm">-- ✅ funciona</span>
+
+<span class="cm">-- ✅ Con CTE (cuando necesitas hacer más cosas después)</span>
+<span class="kw">WITH</span> conteo <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> depto_id, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> total
+    <span class="kw">FROM</span> <span class="tbl">empleados</span>
+    <span class="kw">GROUP BY</span> depto_id
+)
+<span class="kw">SELECT</span> d.nombre, c.total
+<span class="kw">FROM</span> conteo <span class="kw">AS</span> c
+<span class="kw">JOIN</span> <span class="tbl">departamentos</span> <span class="kw">AS</span> d <span class="kw">ON</span> c.depto_id <span class="op">=</span> d.id
+<span class="kw">WHERE</span> c.total <span class="op">></span> <span class="num">5</span>;  <span class="cm">-- ✅ y además le haces JOIN</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">AVG sobre COUNT — imposible sin CTE</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag tv">intermedio</span></div>
+      <pre><span class="cm">-- ❌ No puedes anidar funciones de agregación</span>
+<span class="kw">SELECT AVG</span>(<span class="fn">COUNT</span>(<span class="op">*</span>)) <span class="kw">FROM</span> <span class="tbl">empleados</span>;  <span class="cm">-- ❌ error</span>
+
+<span class="cm">-- ✅ CTE: primero COUNT, luego AVG afuera</span>
+<span class="kw">WITH</span> conteo <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> depto_id, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> total
+    <span class="kw">FROM</span> <span class="tbl">empleados</span>
+    <span class="kw">GROUP BY</span> depto_id
+)
+<span class="kw">SELECT AVG</span>(total) <span class="kw">AS</span> promedio_por_depto
+<span class="kw">FROM</span> conteo;
+
+<span class="cm">-- Clientes con más de 3 pedidos</span>
+<span class="kw">WITH</span> frecuencia <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> cliente_id, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> num_pedidos
+    <span class="kw">FROM</span> <span class="tbl">pedidos</span>
+    <span class="kw">GROUP BY</span> cliente_id
+)
+<span class="kw">SELECT</span> c.nombre, f.num_pedidos
+<span class="kw">FROM</span> frecuencia <span class="kw">AS</span> f
+<span class="kw">JOIN</span> <span class="tbl">clientes</span> <span class="kw">AS</span> c <span class="kw">ON</span> f.cliente_id <span class="op">=</span> c.id
+<span class="kw">WHERE</span> f.num_pedidos <span class="op">></span> <span class="num">3</span>
+<span class="kw">ORDER BY</span> f.num_pedidos <span class="kw">DESC</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Regla de conteo — la más importante</span><span class="tag tg">método</span></div>
+      <div style="padding:16px 18px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent3);margin-bottom:14px;">Fórmula: ¿Cuántos X tiene cada Y?</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div style="background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);border-radius:8px;padding:12px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--accent);margin-bottom:6px;">FROM → qué CUENTAS</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--text);">FROM X</div>
+            <div style="font-size:11.5px;color:var(--muted);margin-top:4px;">la entidad que quieres contar</div>
+          </div>
+          <div style="background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:8px;padding:12px;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1px;color:var(--accent3);margin-bottom:6px;">GROUP BY → por quién</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--text);">GROUP BY Y_id</div>
+            <div style="font-size:11.5px;color:var(--muted);margin-top:4px;">el agrupador</div>
+          </div>
+        </div>
+        <div style="font-size:12.5px;color:rgba(226,232,240,.8);line-height:1.9;border-top:1px solid var(--border);padding-top:12px;">
+          <strong>¿Cuántos PEDIDOS tiene cada CLIENTE?</strong><br>
+          <code>FROM pedidos · GROUP BY cliente_id</code><br><br>
+          <strong>¿Cuántos EMPLEADOS tiene cada DEPTO?</strong><br>
+          <code>FROM empleados · GROUP BY depto_id</code><br><br>
+          <strong>¿Cuántos PRODUCTOS tiene cada CATEGORÍA?</strong><br>
+          <code>FROM productos · GROUP BY categoria_id</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     18 · WHERE vs ON & NULLs
+══════════════════════════════════════ -->
+<section id="s18">
+  <div class="sh">
+    <div class="snum">18</div>
+    <div class="sicon" style="background:rgba(251,191,36,.1)">⚖️</div>
+    <h2>WHERE vs ON &amp; Manejo Completo de NULLs</h2>
+  </div>
+
+  <div class="callout warn">
+    <span class="ci">⚠️</span>
+    <div>Dos confusiones muy frecuentes: poner filtros en WHERE cuando deben ir en ON (destruye el LEFT JOIN silenciosamente), y comparar NULLs con <code>=</code> en lugar de <code>IS NULL</code> (nunca devuelve filas). El código corre sin error pero los resultados son incorrectos.</div>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">WHERE en LEFT JOIN — el error silencioso</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">crítico</span></div>
+      <pre><span class="cm">-- ❌ El WHERE convierte LEFT JOIN en INNER JOIN
+-- Los clientes sin órdenes desaparecen</span>
+<span class="kw">SELECT</span> c.nombre, o.monto
+<span class="kw">FROM</span> <span class="tbl">clientes</span> <span class="kw">AS</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">ordenes</span> <span class="kw">AS</span> o <span class="kw">ON</span> c.id <span class="op">=</span> o.cliente_id
+<span class="kw">WHERE</span> o.monto <span class="op">></span> <span class="num">100</span>;  <span class="cm">-- ❌ mata el LEFT JOIN</span>
+
+<span class="cm">-- ✅ Condición extra en el ON — mantiene todos</span>
+<span class="kw">SELECT</span> c.nombre, o.monto
+<span class="kw">FROM</span> <span class="tbl">clientes</span> <span class="kw">AS</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">ordenes</span> <span class="kw">AS</span> o
+    <span class="kw">ON</span>  c.id <span class="op">=</span> o.cliente_id
+    <span class="kw">AND</span> o.monto <span class="op">></span> <span class="num">100</span>;
+<span class="cm">-- Clientes sin match → monto = NULL ✅
+
+-- Regla de oro con LEFT JOIN:
+-- ON  → condición de unión + filtros del lado derecho
+-- WHERE → filtros del resultado FINAL (no del lado derecho)</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">NULLs — todo lo que necesitas saber</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">crítico</span></div>
+      <pre><span class="cm">-- ❌ NUNCA usa = con NULL — siempre retorna vacío</span>
+<span class="kw">WHERE</span> col <span class="op">=</span> <span class="kw">NULL</span>   <span class="cm">-- ❌ NULL = NULL → UNKNOWN, no TRUE</span>
+<span class="kw">WHERE</span> col <span class="op">!=</span> <span class="kw">NULL</span>  <span class="cm">-- ❌ también vacío</span>
+
+<span class="cm">-- ✅ Siempre IS NULL / IS NOT NULL</span>
+<span class="kw">WHERE</span> col <span class="kw">IS NULL</span>      <span class="cm">-- ✅ filas sin valor</span>
+<span class="kw">WHERE</span> col <span class="kw">IS NOT NULL</span>  <span class="cm">-- ✅ filas con valor</span>
+
+<span class="cm">-- COALESCE: devuelve el primero no NULL de la lista</span>
+<span class="kw">SELECT</span> nombre,
+    <span class="fn">COALESCE</span>(telefono, email, <span class="str">'Sin contacto'</span>) <span class="kw">AS</span> contacto
+<span class="kw">FROM</span> <span class="tbl">clientes</span>;
+
+<span class="cm">-- COALESCE en LEFT JOIN: 0 en vez de NULL</span>
+<span class="kw">SELECT</span> c.nombre,
+    <span class="fn">COALESCE</span>(<span class="kw">SUM</span>(o.monto), <span class="num">0</span>) <span class="kw">AS</span> total_gastado
+<span class="kw">FROM</span> <span class="tbl">clientes</span> <span class="kw">AS</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">ordenes</span> <span class="kw">AS</span> o <span class="kw">ON</span> c.id <span class="op">=</span> o.cliente_id
+<span class="kw">GROUP BY</span> c.id, c.nombre;
+
+<span class="cm">-- NULLIF: devuelve NULL si dos valores son iguales
+-- Evita división por cero</span>
+<span class="kw">SELECT</span> total <span class="op">/</span> <span class="fn">NULLIF</span>(cantidad, <span class="num">0</span>) <span class="kw">FROM</span> <span class="tbl">ventas</span>;</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     19 · ERRORES COMUNES EN SQL
+══════════════════════════════════════ -->
+<section id="s19">
+  <div class="sh">
+    <div class="snum">19</div>
+    <div class="sicon" style="background:rgba(248,113,113,.1)">🚨</div>
+    <h2>Errores Comunes — Los más frecuentes en JRs</h2>
+  </div>
+
+  <div class="g g2">
+    <div class="card">
+      <div class="ch"><span class="ct">Errores de filtrado y NULLs</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">críticos</span></div>
+      <pre><span class="cm">-- ❌ ERROR 1: Comparar NULL con =</span>
+<span class="kw">WHERE</span> col <span class="op">=</span> <span class="kw">NULL</span>    <span class="cm">-- ❌ siempre vacío</span>
+<span class="kw">WHERE</span> col <span class="kw">IS NULL</span>   <span class="cm">-- ✅</span>
+
+<span class="cm">-- ❌ ERROR 2: Usar alias del SELECT en WHERE</span>
+<span class="kw">SELECT</span> salario <span class="op">*</span> <span class="num">12</span> <span class="kw">AS</span> anual <span class="kw">FROM</span> <span class="tbl">emp</span>
+<span class="kw">WHERE</span> anual <span class="op">></span> <span class="num">50000</span>;  <span class="cm">-- ❌ WHERE va antes que SELECT</span>
+<span class="kw">WHERE</span> salario <span class="op">*</span> <span class="num">12</span> <span class="op">></span> <span class="num">50000</span>;  <span class="cm">-- ✅ repite la expresión</span>
+
+<span class="cm">-- ❌ ERROR 3: ORDER BY dentro de subquery</span>
+<span class="kw">WHERE</span> id <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> id <span class="kw">FROM</span> <span class="tbl">tabla</span>
+    <span class="kw">ORDER BY</span> fecha  <span class="cm">-- ❌ sin efecto y puede dar error</span>
+)
+<span class="cm">-- ✅ ORDER BY solo en la query exterior</span>
+
+<span class="cm">-- ❌ ERROR 4: NOT IN con NULLs en la subquery</span>
+<span class="kw">WHERE</span> id <span class="kw">NOT IN</span> (<span class="kw">SELECT</span> manager_id <span class="kw">FROM</span> <span class="tbl">emp</span>)
+<span class="cm">-- Si hay NULLs en manager_id → resultado vacío ❌
+-- ✅ Filtra NULLs en la subquery</span>
+<span class="kw">WHERE</span> id <span class="kw">NOT IN</span> (
+    <span class="kw">SELECT</span> manager_id <span class="kw">FROM</span> <span class="tbl">emp</span>
+    <span class="kw">WHERE</span> manager_id <span class="kw">IS NOT NULL</span>  <span class="cm">-- ✅</span>
+)</pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Errores de agrupación y JOINs</span><button class="cp" onclick="cp(this)">copiar</button><span class="tag to">críticos</span></div>
+      <pre><span class="cm">-- ❌ ERROR 5: Columna no agregada fuera del GROUP BY</span>
+<span class="kw">SELECT</span> nombre, <span class="fn">SUM</span>(ventas) <span class="kw">FROM</span> <span class="tbl">emp</span>;  <span class="cm">-- ❌</span>
+<span class="kw">SELECT</span> nombre, <span class="fn">SUM</span>(ventas) <span class="kw">FROM</span> <span class="tbl">emp</span>
+<span class="kw">GROUP BY</span> nombre;  <span class="cm">-- ✅</span>
+
+<span class="cm">-- ❌ ERROR 6: HAVING para filtros de fila individual</span>
+<span class="kw">SELECT</span> depto, <span class="fn">SUM</span>(sal) <span class="kw">FROM</span> <span class="tbl">emp</span>
+<span class="kw">GROUP BY</span> depto
+<span class="kw">HAVING</span> activo <span class="op">=</span> <span class="num">1</span>;  <span class="cm">-- ❌ activo es de fila, no de grupo</span>
+<span class="cm">-- ✅ activo va antes del GROUP BY</span>
+<span class="kw">WHERE</span> activo <span class="op">=</span> <span class="num">1</span>
+<span class="kw">GROUP BY</span> depto
+<span class="kw">HAVING</span> <span class="fn">SUM</span>(sal) <span class="op">></span> <span class="num">50000</span>;  <span class="cm">-- ✅ HAVING para la agregación</span>
+
+<span class="cm">-- ❌ ERROR 7: JOIN sin ON (producto cartesiano)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">clientes</span>
+<span class="kw">JOIN</span> <span class="tbl">ordenes</span>;  <span class="cm">-- ❌ filas × filas = desastre</span>
+<span class="kw">JOIN</span> <span class="tbl">ordenes</span> <span class="kw">ON</span> clientes.id <span class="op">=</span> ordenes.cliente_id;  <span class="cm">-- ✅</span>
+
+<span class="cm">-- ❌ ERROR 8: Confundir COUNT(*) vs COUNT(col)</span>
+<span class="fn">COUNT</span>(<span class="op">*</span>)              <span class="cm">-- todas las filas (incluye NULLs)</span>
+<span class="fn">COUNT</span>(col)            <span class="cm">-- solo valores no NULL</span>
+<span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> col)   <span class="cm">-- valores únicos no NULL</span></pre>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Tabla resumen — errores y soluciones</span><span class="tag tg">ref</span></div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Error</th><th>Síntoma</th><th>Solución</th></tr></thead>
+          <tbody>
+            <tr><td>col = NULL</td><td>0 resultados siempre</td><td>Usar IS NULL / IS NOT NULL</td></tr>
+            <tr><td>Alias en WHERE</td><td>Error "columna no existe"</td><td>Repetir la expresión o usar CTE/subquery</td></tr>
+            <tr><td>WHERE filtra col del RIGHT en LEFT JOIN</td><td>Pierdes filas del lado izquierdo</td><td>Mover el filtro al ON</td></tr>
+            <tr><td>NOT IN con NULLs en subquery</td><td>Resultado vacío inexplicable</td><td>Agregar WHERE col IS NOT NULL o usar NOT EXISTS</td></tr>
+            <tr><td>Columna no agregada fuera de GROUP BY</td><td>Error de agrupación</td><td>Agregar la columna al GROUP BY</td></tr>
+            <tr><td>HAVING para filtros de fila</td><td>Resultado incorrecto o lento</td><td>Mover al WHERE (antes del GROUP BY)</td></tr>
+            <tr><td>JOIN sin ON</td><td>Resultado gigantesco (M × N filas)</td><td>Siempre agregar cláusula ON</td></tr>
+            <tr><td>ORDER BY en subquery</td><td>Sin efecto / error en algunos motores</td><td>Quitar — ORDER BY solo en query principal</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<!-- ══════════════════════════════════════
+     20 · EJERCICIOS REALES — CHINOOK DB
+══════════════════════════════════════ -->
+<section id="s20">
+  <div class="sh">
+    <div class="snum">20</div>
+    <div class="sicon" style="background:rgba(52,211,153,.1)">🎵</div>
+    <h2>Ejercicios Reales — Chinook DB &amp; Palabras Clave</h2>
+  </div>
+
+  <div class="callout">
+    <span class="ci">🗺️</span>
+    <div><strong>Mapa Chinook:</strong> <code>Artist ──ArtistId──&gt; Album ──AlbumId──&gt; Track</code>. Regla de saltos: pon un dedo en la tabla que <em>VES</em> y otro en la que <em>FILTRA</em>. Cada salto = un IN anidado. Nunca Artist ↔ Track directamente — siempre hay que pasar por Album.</div>
+  </div>
+
+  <!-- PALABRAS CLAVE -->
+  <div class="card" style="margin-bottom:14px;">
+    <div class="ch">
+      <span class="ct">🔑 Palabras clave que te dicen qué herramienta usar</span>
+      <span class="tag tg">ref esencial</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0;">
+
+      <div style="padding:16px 18px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;">→ Subquery con IN</div>
+        <ul style="list-style:none;font-size:12.5px;color:rgba(226,232,240,.8);line-height:2;">
+          <li>🗣 <em>"que pertenecen a..."</em></li>
+          <li>🗣 <em>"tracks del artista..."</em></li>
+          <li>🗣 <em>"álbumes que tienen tracks..."</em></li>
+          <li>🗣 <em>"de artistas que..."</em></li>
+          <li>🗣 <em>"clientes que compraron..."</em></li>
+          <li style="color:var(--muted);font-size:11px;margin-top:4px;">→ hay que saltar de una tabla a otra</li>
+        </ul>
+      </div>
+
+      <div style="padding:16px 18px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--op);margin-bottom:10px;">→ Subquery con NOT IN</div>
+        <ul style="list-style:none;font-size:12.5px;color:rgba(226,232,240,.8);line-height:2;">
+          <li>🗣 <em>"que NO tienen..."</em></li>
+          <li>🗣 <em>"sin ningún..."</em></li>
+          <li>🗣 <em>"que nunca han..."</em></li>
+          <li>🗣 <em>"artistas sin álbum"</em></li>
+          <li>🗣 <em>"que no aparecen en..."</em></li>
+          <li style="color:var(--muted);font-size:11px;margin-top:4px;">→ excluir los que sí están en otra tabla</li>
+        </ul>
+      </div>
+
+      <div style="padding:16px 18px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent2);margin-bottom:10px;">→ Subquery escalar</div>
+        <ul style="list-style:none;font-size:12.5px;color:rgba(226,232,240,.8);line-height:2;">
+          <li>🗣 <em>"más que el promedio"</em></li>
+          <li>🗣 <em>"igual al máximo"</em></li>
+          <li>🗣 <em>"mayor que el mínimo"</em></li>
+          <li>🗣 <em>"precio promedio de todos"</em></li>
+          <li>🗣 <em>"comparar con un solo valor"</em></li>
+          <li style="color:var(--muted);font-size:11px;margin-top:4px;">→ la subquery devuelve 1 solo número</li>
+        </ul>
+      </div>
+
+      <div style="padding:16px 18px;border-bottom:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent4);margin-bottom:10px;">→ Window Function</div>
+        <ul style="list-style:none;font-size:12.5px;color:rgba(226,232,240,.8);line-height:2;">
+          <li>🗣 <em>"junto a / al lado de cada fila"</em></li>
+          <li>🗣 <em>"el máximo de su álbum"</em></li>
+          <li>🗣 <em>"ranking dentro de su grupo"</em></li>
+          <li>🗣 <em>"precio del track anterior"</em></li>
+          <li>🗣 <em>"numerar dentro de cada grupo"</em></li>
+          <li style="color:var(--muted);font-size:11px;margin-top:4px;">→ cálculo por grupo sin perder el detalle</li>
+        </ul>
+      </div>
+
+      <div style="padding:16px 18px;border-right:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent5);margin-bottom:10px;">→ CTE</div>
+        <ul style="list-style:none;font-size:12.5px;color:rgba(226,232,240,.8);line-height:2;">
+          <li>🗣 <em>"que tienen más de N tracks"</em></li>
+          <li>🗣 <em>"con más de X álbumes"</em></li>
+          <li>🗣 <em>"cuál es el promedio de..."</em></li>
+          <li>🗣 <em>"cuántos X tiene cada Y"</em></li>
+          <li>🗣 <em>"filtrar sobre un conteo"</em></li>
+          <li style="color:var(--muted);font-size:11px;margin-top:4px;">→ necesitas COUNT/AVG y luego filtrar sobre él</li>
+        </ul>
+      </div>
+
+      <div style="padding:16px 18px;border-right:1px solid var(--border);">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent6);margin-bottom:10px;">→ JOIN</div>
+        <ul style="list-style:none;font-size:12.5px;color:rgba(226,232,240,.8);line-height:2;">
+          <li>🗣 <em>"mostrar junto con su..."</em></li>
+          <li>🗣 <em>"nombre del artista del track"</em></li>
+          <li>🗣 <em>"con la información de..."</em></li>
+          <li>🗣 <em>"combinar datos de dos tablas"</em></li>
+          <li>🗣 <em>"que incluya columnas de..."</em></li>
+          <li style="color:var(--muted);font-size:11px;margin-top:4px;">→ necesitas columnas de más de una tabla</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- EJERCICIOS SUBQUERIES -->
+  <div style="margin-bottom:14px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;padding:0 2px;">── SUBQUERIES ──────────────────────────────</div>
+    <div class="g g2">
+
+      <div class="card">
+        <div class="ch">
+          <span class="ct">Tracks del artista 'AC/DC' — 2 saltos</span>
+          <button class="cp" onclick="cp(this)">copiar</button>
+          <span class="tag tb">IN anidado</span>
+        </div>
+        <pre><span class="cm">-- Pregunta: ¿Cuáles son los nombres de los tracks
+-- que pertenecen a álbumes del artista 'AC/DC'?
+-- Ruta: Track → Album → Artist  (2 saltos)</span>
+
+<span class="kw">SELECT</span> Name
+<span class="kw">FROM</span> <span class="tbl">Track</span>
+<span class="kw">WHERE</span> AlbumId <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> AlbumId
+    <span class="kw">FROM</span> <span class="tbl">Album</span>
+    <span class="kw">WHERE</span> ArtistId <span class="kw">IN</span> (
+        <span class="kw">SELECT</span> ArtistId
+        <span class="kw">FROM</span> <span class="tbl">Artist</span>
+        <span class="kw">WHERE</span> Name <span class="kw">LIKE</span> <span class="str">'AC/DC'</span>
+    )
+);
+
+<span class="cm">-- Lectura de adentro hacia afuera:
+-- 1. Artist devuelve ArtistId
+-- 2. Album recibe ArtistId → devuelve AlbumId
+-- 3. Track recibe AlbumId → muestra Name</span></pre>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <span class="ct">Artistas SIN ningún álbum — NOT IN</span>
+          <button class="cp" onclick="cp(this)">copiar</button>
+          <span class="tag tp">NOT IN</span>
+        </div>
+        <pre><span class="cm">-- Pregunta: ¿Cuáles son los artistas que NO tienen
+-- ningún álbum registrado?
+-- Señal: "NO tienen" → NOT IN
+-- Ruta: Artist ───── Album  (1 salto)</span>
+
+<span class="kw">SELECT</span> Name
+<span class="kw">FROM</span> <span class="tbl">Artist</span>
+<span class="kw">WHERE</span> ArtistId <span class="kw">NOT IN</span> (
+    <span class="kw">SELECT</span> ArtistId
+    <span class="kw">FROM</span> <span class="tbl">Album</span>
+);
+
+<span class="cm">-- El ArtistId que aparece en Artist
+-- pero NO aparece en Album → sin álbum</span></pre>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <span class="ct">Álbumes con tracks &gt; 5 min — IN 1 salto</span>
+          <button class="cp" onclick="cp(this)">copiar</button>
+          <span class="tag tb">IN</span>
+        </div>
+        <pre><span class="cm">-- Pregunta: ¿Cuáles son los títulos de los álbumes
+-- que tienen algún track que dura más de 5 minutos?
+-- Señal: "álbumes que tienen tracks que..."
+-- Ruta: Album ───── Track  (1 salto)</span>
+
+<span class="kw">SELECT</span> Title
+<span class="kw">FROM</span> <span class="tbl">Album</span>
+<span class="kw">WHERE</span> AlbumId <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> AlbumId
+    <span class="kw">FROM</span> <span class="tbl">Track</span>
+    <span class="kw">WHERE</span> Milliseconds <span class="op">></span> <span class="num">300000</span>
+);
+
+<span class="cm">-- 5 minutos = 5 × 60 × 1000 = 300,000 ms</span></pre>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <span class="ct">Tracks sobre el precio promedio — escalar</span>
+          <button class="cp" onclick="cp(this)">copiar</button>
+          <span class="tag tb">escalar</span>
+        </div>
+        <pre><span class="cm">-- Pregunta: ¿Cuáles son los tracks que cuestan
+-- más que el precio promedio de todos los tracks?
+-- Señal: "más que el promedio" → subquery escalar
+-- La subquery devuelve UN solo número</span>
+
+<span class="kw">SELECT</span> TrackId, Name
+<span class="kw">FROM</span> <span class="tbl">Track</span>
+<span class="kw">WHERE</span> UnitPrice <span class="op">></span> (
+    <span class="kw">SELECT AVG</span>(UnitPrice)
+    <span class="kw">FROM</span> <span class="tbl">Track</span>
+);
+
+<span class="cm">-- AVG() devuelve 1 valor → usar >, <, =, >=, <=
+-- Si devolviera varios → usarías IN</span></pre>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- EJERCICIOS WINDOW FUNCTIONS -->
+  <div style="margin-bottom:14px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent4);margin-bottom:10px;padding:0 2px;">── WINDOW FUNCTIONS ─────────────────────────</div>
+    <div class="g g2">
+
+      <div class="card">
+        <div class="ch">
+          <span class="ct">Precio máximo del álbum al lado de cada track</span>
+          <button class="cp" onclick="cp(this)">copiar</button>
+          <span class="tag to">PARTITION BY</span>
+        </div>
+        <pre><span class="cm">-- Pregunta: Muestra cada track con su precio y el
+-- precio máximo de su álbum
+-- Señal: "al lado de cada track" → Window Function
+-- No GROUP BY porque necesitas VER cada track</span>
+
+<span class="kw">SELECT</span>
+    TrackId,
+    UnitPrice,
+    <span class="fn">MAX</span>(UnitPrice) <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> AlbumId
+    ) <span class="kw">AS</span> maximo_precio
+<span class="kw">FROM</span> <span class="tbl">Track</span>;
+
+<span class="cm">-- PARTITION BY AlbumId → calcula el MAX
+-- dentro de cada álbum por separado
+-- Cada fila conserva su propio UnitPrice ✅</span></pre>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <span class="ct">Ranking de precio dentro de cada álbum</span>
+          <button class="cp" onclick="cp(this)">copiar</button>
+          <span class="tag to">RANK</span>
+        </div>
+        <pre><span class="cm">-- Pregunta: Muestra cada track con su nombre y un
+-- ranking de precio dentro de su álbum
+-- (del más caro al más barato)
+-- Señal: "ranking dentro de su..." → RANK + PARTITION BY</span>
+
+<span class="kw">SELECT</span>
+    TrackId,
+    Name,
+    <span class="fn">RANK</span>() <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> AlbumId
+        <span class="kw">ORDER BY</span> UnitPrice <span class="kw">DESC</span>
+    ) <span class="kw">AS</span> ranking_precio
+<span class="kw">FROM</span> <span class="tbl">Track</span>;
+
+<span class="cm">-- PARTITION BY AlbumId → reinicia el ranking en cada álbum
+-- ORDER BY UnitPrice DESC → del más caro al más barato
+-- Si dos tracks tienen el mismo precio → mismo rank</span></pre>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <span class="ct">Precio del track anterior en el mismo álbum</span>
+          <button class="cp" onclick="cp(this)">copiar</button>
+          <span class="tag to">LAG</span>
+        </div>
+        <pre><span class="cm">-- Pregunta: Muestra cada track con el precio del
+-- track anterior dentro de su álbum
+-- Señal: "precio del track ANTERIOR" → LAG</span>
+
+<span class="kw">SELECT</span>
+    TrackId,
+    UnitPrice,
+    <span class="fn">LAG</span>(UnitPrice) <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> AlbumId
+        <span class="kw">ORDER BY</span> TrackId
+    ) <span class="kw">AS</span> precio_anterior
+<span class="kw">FROM</span> <span class="tbl">Track</span>;
+
+<span class="cm">-- LAG mira la fila anterior dentro del grupo
+-- El primer track de cada álbum → precio_anterior = NULL
+-- ORDER BY TrackId → define cuál es "anterior"</span></pre>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- EJERCICIOS CTEs -->
+  <div style="margin-bottom:14px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent5);margin-bottom:10px;padding:0 2px;">── CTEs ─────────────────────────────────────</div>
+    <div class="g g2">
+
+      <div class="card">
+        <div class="ch">
+          <span class="ct">Álbumes con más de 10 tracks</span>
+          <button class="cp" onclick="cp(this)">copiar</button>
+          <span class="tag tv">CTE + COUNT</span>
+        </div>
+        <pre><span class="cm">-- Pregunta: ¿Cuáles son los álbumes que tienen
+-- más de 10 tracks?
+-- Señal: "más de N tracks" → CTE
+-- No puedes: WHERE COUNT(*) > 10 ❌</span>
+
+<span class="kw">WITH</span> conteo <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> AlbumId, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> total_tracks
+    <span class="kw">FROM</span> <span class="tbl">Track</span>
+    <span class="kw">GROUP BY</span> AlbumId
+)
+<span class="kw">SELECT</span> AlbumId
+<span class="kw">FROM</span> conteo
+<span class="kw">WHERE</span> total_tracks <span class="op">></span> <span class="num">10</span>;
+
+<span class="cm">-- Regla de conteo:
+-- ¿Cuántos TRACKS tiene cada ÁLBUM?
+-- FROM Track · GROUP BY AlbumId ✅</span></pre>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <span class="ct">Artistas con más de 5 álbumes</span>
+          <button class="cp" onclick="cp(this)">copiar</button>
+          <span class="tag tv">CTE + COUNT</span>
+        </div>
+        <pre><span class="cm">-- Pregunta: ¿Cuáles son los artistas que tienen
+-- más de 5 álbumes?
+-- Señal: "más de N álbumes" → CTE</span>
+
+<span class="kw">WITH</span> conteo <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> ArtistId, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> total_albums
+    <span class="kw">FROM</span> <span class="tbl">Album</span>
+    <span class="kw">GROUP BY</span> ArtistId
+)
+<span class="kw">SELECT</span> ArtistId
+<span class="kw">FROM</span> conteo
+<span class="kw">WHERE</span> total_albums <span class="op">></span> <span class="num">5</span>;
+
+<span class="cm">-- Regla de conteo:
+-- ¿Cuántos ÁLBUMES tiene cada ARTISTA?
+-- FROM Album · GROUP BY ArtistId ✅</span></pre>
+      </div>
+
+      <div class="card">
+        <div class="ch">
+          <span class="ct">Promedio de tracks por álbum — AVG sobre COUNT</span>
+          <button class="cp" onclick="cp(this)">copiar</button>
+          <span class="tag tv">CTE + AVG(COUNT)</span>
+        </div>
+        <pre><span class="cm">-- Pregunta: ¿Cuál es el promedio de tracks por álbum?
+-- Señal: "promedio de..." que requiere contar primero
+-- No puedes: SELECT AVG(COUNT(*)) ❌ directo</span>
+
+<span class="kw">WITH</span> conteo <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> AlbumId, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> total_tracks
+    <span class="kw">FROM</span> <span class="tbl">Track</span>
+    <span class="kw">GROUP BY</span> AlbumId
+)
+<span class="kw">SELECT AVG</span>(total_tracks) <span class="kw">AS</span> promedio
+<span class="kw">FROM</span> conteo;
+
+<span class="cm">-- Paso 1 (CTE): contar tracks por álbum
+-- Paso 2 (query): promediar esos conteos
+-- AVG(COUNT(*)) ❌ / CTE → luego AVG ✅</span></pre>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PATRON MENTAL FINAL -->
+  <div class="card">
+    <div class="ch">
+      <span class="ct">🧠 Patrón mental para resolver cualquier ejercicio</span>
+      <span class="tag tg">método</span>
+    </div>
+    <pre style="font-size:12.5px;line-height:2;"><span class="cm">Paso 1: Lee la pregunta y detecta la palabra clave</span>
+  <span class="str">"que pertenecen a / del artista / que tienen..."</span>   → <span class="kw">IN</span>
+  <span class="str">"que NO tienen / sin ningún / que nunca..."</span>         → <span class="kw">NOT IN</span>
+  <span class="str">"más que el promedio / igual al máximo..."</span>          → subquery <span class="kw">escalar</span>
+  <span class="str">"al lado de cada fila / máximo de su grupo..."</span>      → <span class="fn">PARTITION BY</span>
+  <span class="str">"ranking / numerar / anterior / siguiente..."</span>       → <span class="fn">RANK / ROW_NUMBER / LAG / LEAD</span>
+  <span class="str">"que tienen más de N / promedio de conteo..."</span>       → <span class="kw">CTE</span>
+
+<span class="cm">Paso 2: Si usas IN/NOT IN → cuenta los saltos en el mapa</span>
+  <span class="v">Track ──AlbumId──&gt; Album ──ArtistId──&gt; Artist</span>
+  <span class="cm">1 salto  = 1 subquery · 2 saltos = 2 subqueries anidadas</span>
+  <span class="cm">Lectura: de ADENTRO hacia AFUERA</span>
+
+<span class="cm">Paso 3: Si usas CTE → aplica la Regla de Conteo</span>
+  <span class="cm">¿Cuántos X tiene cada Y? → FROM X · GROUP BY Y_id</span>
+  <span class="cm">¿Cuántos TRACKS tiene cada ÁLBUM? → FROM Track · GROUP BY AlbumId</span></pre>
+  </div>
+
+</section>
+
+</main>
+
+<footer>
+  SQL Cheatsheet — Junior → Mid Developer &nbsp;·&nbsp; Hecho con <span>♥</span> para aprender SQL
+</footer>
+
+<script>
+function cp(btn) {
+  const pre = btn.closest('.card').querySelector('pre');
+  if (!pre) return;
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ ok';
+    btn.style.color = 'var(--accent3)';
+    btn.style.borderColor = 'var(--accent3)';
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 1800);
+  });
+}
+
+// Stagger animations
+document.querySelectorAll('.card').forEach((c, i) => {
+  c.style.animationDelay = `${(i % 5) * 55}ms`;
+});
+
+// Sticky nav highlight
+const secs = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('nav a');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(a => { a.style.color = ''; a.style.borderBottomColor = ''; });
+      const a = document.querySelector(`nav a[href="#${e.target.id}"]`);
+      if (a) { a.style.color = 'var(--text)'; a.style.borderBottomColor = 'var(--accent)'; }
+    }
+  });
+}, { rootMargin: '-25% 0px -65% 0px' });
+secs.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>
