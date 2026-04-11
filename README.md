@@ -37,4 +37,4 @@ As I prepare for my first **Data Analyst** role, I realized that mastering tools
 3. Provide a practical bridge between theoretical learning and professional-grade execution.
 
 ---
-*Created by Rubén Ponce Huerta — Focused on SQL, Pandas, and Data-Driven Storytelling.*
+*Created by Rubén Ponce Huerta — Focused on SQL and Pandas
